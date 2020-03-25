@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace ReaderXml
 {
     public class KPT : CadastralObject
     {
+        #region
         /// <summary>
         /// Название файла
         /// </summary>
@@ -35,161 +38,72 @@ namespace ReaderXml
         public string Official { get; set; }
 
         /// <summary>
+        /// Координаты
+        /// </summary>
+        public bool isCoordinates { get; set; }
+
+        /// <summary>
         /// Сведения о земельных участках
         /// </summary>
-        public List<Parcel> Parcels
-        {
-            get
-            {
-                if (_Parcels == null)
-                    _Parcels = new List<Parcel>();
-                return _Parcels;
-            }
-            set
-            {
-                _Parcels = value;
-            }
-        }
+        public List<Parcel> Parcels { get; } = new List<Parcel>();
 
         /// <summary>
         /// Здания
         /// </summary>
-        public List<Building> Buildings
-        {
-            get
-            {
-                if (_Buildings == null)
-                    _Buildings = new List<Building>();
-                return _Buildings;
-            }
-            set
-            {
-                _Buildings = value;
-            }
-        }
+        public List<Building> Buildings { get; } = new List<Building>();
 
         /// <summary>
         /// Сооружение
         /// </summary>
-        public List<Construction> Constructions
-        {
-            get
-            {
-                if (_Constructions == null)
-                    _Constructions = new List<Construction>();
-                return _Constructions;
-            }
-            set
-            {
-                _Constructions = value;
-            }
-        }
+        public List<Construction> Constructions { get; } = new List<Construction>();
 
         /// <summary>
         /// ОНС
         /// </summary>
-        public List<Uncompleted> Uncompleteds
-        {
-            get
-            {
-                if (_Uncompleted == null)
-                    _Uncompleted = new List<Uncompleted>();
-                return _Uncompleted;
-            }
-            set
-            {
-                _Uncompleted = value;
-            }
-        }
+        public List<Uncompleted> Uncompleteds { get; } = new List<Uncompleted>();
 
         /// <summary>
         /// Границы между субъектами РФ, границы населенных пунктов, муниципальных образований, расположенных в кадастровом квартале
         /// </summary>
-        public List<Bound> Bounds
-        {
-            get
-            {
-                if (_Bounds == null)
-                    _Bounds = new List<Bound>();
-                return _Bounds;
-            }
-            set
-            {
-                _Bounds = value;
-            }
-        }
+        public List<Bound> Bounds { get; } = new List<Bound>();
 
         /// <summary>
         /// Зоны
         /// </summary>
-        public List<Zone> Zones
-        {
-            get
-            {
-                if (_Zones == null)
-                    _Zones = new List<Zone>();
-                return _Zones;
-            }
-            set
-            {
-                _Zones = value;
-            }
-        }
+        public List<Zone> Zones { get; } = new List<Zone>();
 
         /// <summary>
         /// Сведения о пунктах ОМС
         /// </summary>
-        public List<OMSPoint> OMSPoints
-        {
-            get
-            {
-                if (_OMSPoint == null)
-                    _OMSPoint = new List<OMSPoint>();
-                return _OMSPoint;
-            }
-            set
-            {
-                _OMSPoint = value;
-            }
-        }
-
-        private List<Parcel> _Parcels;
-        private List<Building> _Buildings;
-        private List<Construction> _Constructions;
-        private List<Uncompleted> _Uncompleted;
-        private List<Bound> _Bounds;
-        private List<Zone> _Zones;
-        private List<OMSPoint> _OMSPoint;
+        public List<OMSPoint> OMSPoints { get; } = new List<OMSPoint>();
+        #endregion
         public KPT(string fileName)
         {
+            var dictionary = FillDictionary(fileName);
+            
             using (var reader = XmlReader.Create(fileName, new XmlReaderSettings() { DtdProcessing = DtdProcessing.Parse }))
             {
                 while (reader.Read())
                 {
                     if (reader.NodeType == XmlNodeType.Element)
                     {
-                        switch (reader.Name)
+                        switch (reader.LocalName)
                         {
                             case "Total":
                                 {
-                                    Area = reader.ReadElementContentAsString();
-                                }
-                                break;
-                            case "Unit":
-                                {
-                                    Unit = reader.ReadElementContentAsString();
+                                    Area = reader.ReadElementContentAsString() + "Га";
                                 }
                                 break;
                             case "CadastralBlock":
                                 {
-                                    reader.MoveToAttribute(0);
+                                    reader.MoveToAttribute("CadastralNumber");
                                     CadastralNumber = reader.Value;
                                 }
                                 break;
                             case "Parcel":
                                 {
                                     var inner = reader.ReadSubtree();
-                                    Parcel p = new Parcel(inner);
+                                    Parcel p = new Parcel(inner, dictionary);
                                     Parcels.Add(p);
                                     inner.Close();
                                 }
@@ -197,7 +111,7 @@ namespace ReaderXml
                             case "Building":
                                 {
                                     var inner = reader.ReadSubtree();
-                                    Building b = new Building(inner);
+                                    Building b = new Building(inner, dictionary);
                                     Buildings.Add(b);
                                     inner.Close();
                                 }
@@ -205,7 +119,7 @@ namespace ReaderXml
                             case "Construction":
                                 {
                                     var inner = reader.ReadSubtree();
-                                    Construction c = new Construction(inner);
+                                    Construction c = new Construction(inner, dictionary);
                                     Constructions.Add(c);
                                     inner.Close();
                                 }
@@ -213,7 +127,7 @@ namespace ReaderXml
                             case "Uncompleted":
                                 {
                                     var inner = reader.ReadSubtree();
-                                    Uncompleted u = new Uncompleted(inner);
+                                    Uncompleted u = new Uncompleted(inner, dictionary);
                                     Uncompleteds.Add(u);
                                     inner.Close();
                                 }
@@ -221,7 +135,7 @@ namespace ReaderXml
                             case "Bound":
                                 {
                                     var inner = reader.ReadSubtree();
-                                    Bound b = new Bound(inner);
+                                    Bound b = new Bound(inner, dictionary);
                                     Bounds.Add(b);
                                     inner.Close();
                                 }
@@ -229,7 +143,7 @@ namespace ReaderXml
                             case "Zone":
                                 {
                                     var inner = reader.ReadSubtree();
-                                    Zone z = new Zone(inner);
+                                    Zone z = new Zone(inner, dictionary);
                                     Zones.Add(z);
                                     inner.Close();
                                 }
@@ -242,37 +156,42 @@ namespace ReaderXml
                                     inner.Close();
                                 }
                                 break;
-                            case "ns6:Organization":
+                            case "Organization":
                                 {
                                     Organization = reader.ReadElementContentAsString();
                                 }
                                 break;
-                            case "ns6:Date":
+                            case "Ordinate":
+                                {
+                                    isCoordinates = true;
+                                }
+                                break;
+                            case "Date":
                                 {
                                     Date = reader.ReadElementContentAsDateTime();
                                 }
                                 break;
-                            case "ns6:Number":
+                            case "Number":
                                 {
                                     Number = reader.ReadElementContentAsString();
                                 }
                                 break;
-                            case "ns6:Appointment":
+                            case "Appointment":
                                 {
                                     Official += reader.ReadElementContentAsString() + ", ";
                                 }
                                 break;
-                            case "ns7:FamilyName":
+                            case "FamilyName":
                                 {
                                     Official += reader.ReadElementContentAsString() + " ";
                                 }
                                 break;
-                            case "ns7:FirstName":
+                            case "FirstName":
                                 {
                                     Official += reader.ReadElementContentAsString() + " ";
                                 }
                                 break;
-                            case "ns7:Patronymic":
+                            case "Patronymic":
                                 {
                                     Official += reader.ReadElementContentAsString() + " ";
                                 }
@@ -282,6 +201,60 @@ namespace ReaderXml
                 }
             }
         }
+
+        private Dictionary FillDictionary(string fileName)
+        {
+            Dictionary dictionary = new Dictionary();
+            var nsManager = new XmlNamespaceManager(new NameTable());
+            nsManager.AddNamespace("xs", "http://www.w3.org/2001/XMLSchema");
+
+            var xsdAddressRegion = XElement.Load(@"D:\ReaderXml\ReaderXml\КПТ\Схемы\KPT_v10\SchemaCommon\dRegionsRF_v01.xsd");
+            dictionary.AddressRegion = xsdAddressRegion.XPathSelectElements(".//xs:enumeration", nsManager)
+                .ToDictionary(x => x.XPathEvaluate("string(@value)").ToString(),
+                x => x.XPathEvaluate("string(./xs:annotation/xs:documentation)", nsManager).ToString());
+
+            var xsdParcelsName = XElement.Load(@"D:\ReaderXml\ReaderXml\КПТ\Схемы\KPT_v10\SchemaCommon\dParcels_v01.xsd");
+            dictionary.ParcelsName = xsdParcelsName.XPathSelectElements(".//xs:enumeration", nsManager)
+                .ToDictionary(x => x.XPathEvaluate("string(@value)").ToString(),
+                x => x.XPathEvaluate("string(./xs:annotation/xs:documentation)", nsManager).ToString());
+
+            var xsdParcelsCategory = XElement.Load(@"D:\ReaderXml\ReaderXml\КПТ\Схемы\KPT_v10\SchemaCommon\dCategories_v01.xsd");
+            dictionary.ParcelsCategory = xsdParcelsCategory.XPathSelectElements(".//xs:enumeration", nsManager)
+                .ToDictionary(x => x.XPathEvaluate("string(@value)").ToString(),
+                x => x.XPathEvaluate("string(./xs:annotation/xs:documentation)", nsManager).ToString());
+
+            var xsdParcelsUtilization = XElement.Load(@"D:\ReaderXml\ReaderXml\КПТ\Схемы\KPT_v10\SchemaCommon\dUtilizations_v01.xsd");
+            dictionary.ParcelsUtilization = xsdParcelsUtilization.XPathSelectElements(".//xs:enumeration", nsManager)
+                .ToDictionary(x => x.XPathEvaluate("string(@value)").ToString(),
+                x => x.XPathEvaluate("string(./xs:annotation/xs:documentation)", nsManager).ToString());
+
+            var xsdObjectType = XElement.Load(@"D:\ReaderXml\ReaderXml\КПТ\Схемы\KPT_v10\SchemaCommon\dRealty_v03.xsd");
+            dictionary.ObjectType = xsdObjectType.XPathSelectElements(".//xs:enumeration", nsManager)
+                .ToDictionary(x => x.XPathEvaluate("string(@value)").ToString(),
+                x => x.XPathEvaluate("string(./xs:annotation/xs:documentation)", nsManager).ToString());
+
+            var xsdKeyParameters = XElement.Load(@"D:\ReaderXml\ReaderXml\КПТ\Схемы\KPT_v10\SchemaCommon\dTypeParameter_v01.xsd");
+            dictionary.KeyParameters = xsdKeyParameters.XPathSelectElements(".//xs:enumeration", nsManager)
+                .ToDictionary(x => x.XPathEvaluate("string(@value)").ToString(),
+                x => x.XPathEvaluate("string(./xs:annotation/xs:documentation)", nsManager).ToString());
+
+            using (var reader = XmlReader.Create(fileName, new XmlReaderSettings() { DtdProcessing = DtdProcessing.Parse }))
+            {
+                reader.ReadToDescendant("CoordSystems");
+                while (reader.Read())
+                {
+                    if (reader.LocalName == "CoordSystem")
+                    {
+                        string CsId = "";
+                        reader.MoveToAttribute("CsId").ToString();
+                        CsId = reader.Value;
+                        reader.MoveToAttribute("Name");
+                        dictionary.CoordSystems.Add(CsId, reader.Value);
+                    }
+                }
+            }
+            return dictionary;
+        }
     }
 
     public abstract class CadastralObject
@@ -290,35 +263,16 @@ namespace ReaderXml
         /// Кадастровый номер замельного участка
         /// </summary>
         public string CadastralNumber { get; set; }
+
         /// <summary>
         /// Площадь земельного участка
         /// </summary>
         public string Area { get; set; }
-
-        /// <summary>
-        /// Единица измерения - квадратный метр
-        /// </summary>
-        public string Unit { get; set; }
     }
 
-    public abstract class Address
+    public class Address
     {
-        public string AddressOrLocation { get; set; }
-        /// <summary>
-        /// ОКАТО
-        /// </summary>
-        public string OKATO { get; set; }
-
-        /// <summary>
-        /// КЛАДР
-        /// </summary>
-        public string KLADR { get; set; }
-
-        /// <summary>
-        /// ОКТМО
-        /// </summary>
-        public string OKTMO { get; set; }
-
+        #region
         /// <summary>
         /// Почтовый индекс
         /// </summary>
@@ -330,104 +284,54 @@ namespace ReaderXml
         public string Region { get; set; }
 
         /// <summary>
-        /// Наименование района
+        /// Район
         /// </summary>
-        public string DistrictName { get; set; }
+        public string District { get; set; }
 
         /// <summary>
-        /// Тип района
+        /// Муниципальное образование
         /// </summary>
-        public string DistrictType { get; set; }
+        public string City { get; set; }
 
         /// <summary>
-        /// Наименование муниципального образования
+        /// Городской район
         /// </summary>
-        public string CityName { get; set; }
+        public string UrbanDistrict { get; set; }
 
         /// <summary>
-        /// Тип муниципального образования
+        /// Сельсовет
         /// </summary>
-        public string CityType { get; set; }
+        public string SovietVillage { get; set; }
 
         /// <summary>
-        /// Наименование городского района
+        /// Населённый пункт
         /// </summary>
-        public string UrbanDistrictName { get; set; }
+        public string Locality { get; set; }
 
         /// <summary>
-        /// Тип городского района
+        /// Улица
         /// </summary>
-        public string UrbanDistrictType { get; set; }
+        public string Street { get; set; }
 
         /// <summary>
-        /// Наименование сельсовета
+        /// Дом
         /// </summary>
-        public string SovietVillageName { get; set; }
+        public string Level1 { get; set; }
 
         /// <summary>
-        /// Тип сельсовета
+        /// Корпус
         /// </summary>
-        public string SovietVillageType { get; set; }
+        public string Level2 { get; set; }
 
         /// <summary>
-        /// Наименование населённого пункта
+        /// Строение
         /// </summary>
-        public string LocalityName { get; set; }
+        public string Level3 { get; set; }
 
         /// <summary>
-        /// Тип населённого пункта
+        /// Квартира
         /// </summary>
-        public string LocalityType { get; set; }
-
-        /// <summary>
-        /// Наименование улицы
-        /// </summary>
-        public string StreetName { get; set; }
-
-        /// <summary>
-        /// Тип улицы
-        /// </summary>
-        public string StreetType { get; set; }
-
-        /// <summary>
-        /// Тип дома
-        /// </summary>
-        public string Level1Type { get; set; }
-
-        /// <summary>
-        /// Значение дома
-        /// </summary>
-        public string Level1Value { get; set; }
-
-        /// <summary>
-        /// Тип корпуса
-        /// </summary>
-        public string Level2Type { get; set; }
-
-        /// <summary>
-        /// Значение корпуса
-        /// </summary>
-        public string Level2Value { get; set; }
-
-        /// <summary>
-        /// Тип строения
-        /// </summary>
-        public string Level3Type { get; set; }
-
-        /// <summary>
-        /// Значение строения
-        /// </summary>
-        public string Level3Value { get; set; }
-
-        /// <summary>
-        /// Тип квартиры
-        /// </summary>
-        public string ApartmentType { get; set; }
-
-        /// <summary>
-        /// Значение квартиры
-        /// </summary>
-        public string ApartmentValue { get; set; }
+        public string Apartment { get; set; }
 
         /// <summary>
         /// Иное
@@ -438,9 +342,126 @@ namespace ReaderXml
         /// Неформализованное описание
         /// </summary>
         public string Note { get; set; }
+        #endregion
+
+        public Address(XmlReader reader, Dictionary<string, string> dictionary)
+        {
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    switch (reader.LocalName)
+                    {
+                        case "PostalCode":
+                            {
+                                PostalCode = reader.ReadElementContentAsString();
+                            }
+                            break;
+                        case "Region":
+                            {
+                                string region = "";
+                                if (dictionary.TryGetValue(reader.ReadElementContentAsString(), out region))
+                                    Region = region;
+                            }
+                            break;
+                        case "District":
+                            {
+                                reader.MoveToAttribute("Type");
+                                District = reader.Value + " ";
+                                reader.MoveToAttribute("Name");
+                                District += reader.Value;
+                            }
+                            break;
+                        case "City":
+                            {
+                                reader.MoveToAttribute("Type");
+                                City = reader.Value + " ";
+                                reader.MoveToAttribute("Name");
+                                City += reader.Value;
+                            }
+                            break;
+                        case "UrbanDistrict":
+                            {
+                                reader.MoveToAttribute("Type");
+                                UrbanDistrict = reader.Value + " ";
+                                reader.MoveToAttribute("Name");
+                                UrbanDistrict += reader.Value;
+                            }
+                            break;
+                        case "SovietVillage":
+                            {
+                                reader.MoveToAttribute("Type");
+                                SovietVillage = reader.Value + " ";
+                                reader.MoveToAttribute("Name");
+                                SovietVillage += reader.Value;
+                            }
+                            break;
+                        case "Locality":
+                            {
+                                reader.MoveToAttribute("Type");
+                                Locality = reader.Value + " ";
+                                reader.MoveToAttribute("Name");
+                                Locality += reader.Value;
+                            }
+                            break;
+                        case "Street":
+                            {
+                                reader.MoveToAttribute("Type");
+                                Street = reader.Value + " ";
+                                reader.MoveToAttribute("Name");
+                                Street += reader.Value;
+                            }
+                            break;
+                        case "Level1":
+                            {
+                                reader.MoveToAttribute("Type");
+                                Level1 = reader.Value + " ";
+                                reader.MoveToAttribute("Value");
+                                Level1 += reader.Value;
+                            }
+                            break;
+                        case "Level2":
+                            {
+                                reader.MoveToAttribute("Type");
+                                Level2 = reader.Value + " ";
+                                reader.MoveToAttribute("Value");
+                                Level2 += reader.Value;
+                            }
+                            break;
+                        case "Level3":
+                            {
+                                reader.MoveToAttribute("Type");
+                                Level3 = reader.Value + " ";
+                                reader.MoveToAttribute("Value");
+                                Level3 += reader.Value;
+                            }
+                            break;
+                        case "Apartment":
+                            {
+                                reader.MoveToAttribute("Type");
+                                Apartment = reader.Value + " ";
+                                reader.MoveToAttribute("Value");
+                                Apartment += reader.Value;
+                            }
+                            break;
+                        case "Other":
+                            {
+                                Other = reader.ReadElementContentAsString();
+                            }
+                            break;
+                        case "Note":
+                            {
+                                Note = reader.ReadElementContentAsString();
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
     }
 
-    // Вопрос по EntitySpatial, можно ли всё не извлекать, просто проверить наличие
     public class Parcel : CadastralObject
     {
         #region Свойства
@@ -471,9 +492,14 @@ namespace ReaderXml
         public string Category { get; set; }
 
         /// <summary>
-        /// Уточнение местоположения и адрес (описание местоположения) земельного участка
+        /// Вид разрешенного использования
         /// </summary>
-        public Location Location;
+        public string Utilization { get; set; }
+
+        /// <summary>
+        /// Адрес
+        /// </summary>
+        public string Address { get; set; }
 
         /// <summary>
         /// Сведения о величине кадастровой стоимости
@@ -481,7 +507,7 @@ namespace ReaderXml
         public string CadastralCost { get; set; }
 
         #endregion
-        public Parcel(XmlReader reader)
+        public Parcel(XmlReader reader, Dictionary dictionary)
         {
             reader.Read();
             #region Присваиваем атрибуты Parcel
@@ -502,37 +528,51 @@ namespace ReaderXml
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
-                    switch (reader.Name)
+                    switch (reader.LocalName)
                     {
                         case "Area":
                             {
                                 reader.MoveToContent();
                                 reader.ReadToDescendant("Area");
-                                Area = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "Unit":
-                            {
-                                Unit = reader.ReadElementContentAsString();
+                                Area = reader.ReadElementContentAsString() + "кв. м.";
                             }
                             break;
                         case "Name":
                             {
-                                //Это должно красиво выглядеть
-                                Name = reader.ReadElementContentAsString();
+                                string name = "";
+                                if (dictionary.ParcelsName.TryGetValue(reader.ReadElementContentAsString(), out name))
+                                    Name = name;
                             }
                             break;
                         case "Location":
                             {
-                                var inner = reader.ReadSubtree();
-                                Location l = new Location(inner);
-                                Location = l;
+                                Location l = new Location(reader.ReadSubtree(), dictionary.AddressRegion);
+                                Address = l.GetAddress(true);
                             }
                             break;
                         case "Category":
                             {
-                                //Это должно красиво выглядеть
-                                Category = reader.ReadElementContentAsString();
+                                string category = "";
+                                if (dictionary.ParcelsCategory.TryGetValue(reader.ReadElementContentAsString(), out category))
+                                    Category = category;
+                            }
+                            break;
+                        case "Utilization":
+                            {
+                                if (reader.MoveToAttribute("LandUse"))
+                                    Utilization = reader.Value;
+
+                                if (Utilization == "" || Utilization == null || Utilization == "-")
+                                {
+                                    reader.MoveToAttribute("ByDoc");
+                                    Utilization = reader.Value;
+                                }
+
+                                if (Utilization == "" || Utilization == null || Utilization == "-")
+                                {
+                                    reader.MoveToAttribute("Utilization");
+                                    Utilization = reader.Value;
+                                }
                             }
                             break;
                         case "ParentCadastralNumbers":
@@ -551,11 +591,13 @@ namespace ReaderXml
                         case "EntitySpatial":
                             {
                                 reader.MoveToAttribute("EntSys");
-                                EntSys = Convert.ToString(reader.Value);
-                                reader.MoveToContent();
-                                if (reader.ReadToDescendant("ns3:Ordinate"))
-                                    isCoordinates = true;
+                                string entSys = "";
+                                if (dictionary.CoordSystems.TryGetValue(Convert.ToString(reader.Value), out entSys))
+                                    EntSys = entSys;
                             }
+                            break;
+                        case "Ordinate":
+                            isCoordinates = true;
                             break;
                         default:
                             break;
@@ -565,8 +607,7 @@ namespace ReaderXml
         }
     }
 
-    // Следующие четыре класса, кроме Elaboration, доделать  Адрес  
-    public class Location : Address
+    public class Location
     {
         /// <summary>
         /// В границах
@@ -581,16 +622,20 @@ namespace ReaderXml
         /// <summary>
         /// Уточнение местоположения
         /// </summary>
-        public Elaboration Elaboration;
+        public Elaboration Elaboration { get; set; }
 
-        // ---------------- ВОПРОС ПО АДРЕСУ -------------------
-        public Location(XmlReader reader)
+        /// <summary>
+        /// Адрес
+        /// </summary>
+        public Address Address { get; set; }
+
+        public Location(XmlReader reader, Dictionary<string, string> dictionary)
         {
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
-                    switch (reader.Name)
+                    switch (reader.LocalName)
                     {
                         case "inBounds":
                             {
@@ -604,14 +649,14 @@ namespace ReaderXml
                             break;
                         case "Elaboration":
                             {
-                                var inner = reader.ReadSubtree();
-                                Elaboration e = new Elaboration(reader);
+                                Elaboration e = new Elaboration(reader.ReadSubtree());
                                 Elaboration = e;
                             }
                             break;
                         case "Address":
                             {
-                                //Как лучше извлекать?
+                                Address a = new Address(reader.ReadSubtree(), dictionary);
+                                Address = a;
                             }
                             break;
                         default:
@@ -620,6 +665,50 @@ namespace ReaderXml
                 }
             }
 
+        }
+
+        public string GetAddress(bool isParcel)
+        {
+            string address;
+            if (isParcel == true)
+            {
+                if (inBounds == "" || inBounds == "2")
+                {
+                    address = Address.Note != null || Address.Note != "" ? Address.Note : OutputAddress();
+                }
+                else
+                {
+                    address = inBounds == "1" ? OutputAddress(true) : OutputAddress(false);
+                }
+            }
+            else
+                address = OutputAddress();
+            return address;
+
+        }
+        private string OutputAddress()
+        {
+            return $"{(Address.PostalCode == null || Address.PostalCode == "" ? "" : $"{Address.PostalCode}, ")}" +
+                        $"{(Address.Region == null || Address.Region == "" ? "" : $"{Address.Region}, ")}" +
+                        $"{(Address.District == null || Address.District == "" ? "" : $"{Address.District}, ")}" +
+                        $"{(Address.City == null || Address.City == "" ? "" : $"{Address.City}, ")}" +
+                        $"{(Address.UrbanDistrict == null || Address.UrbanDistrict == "" ? "" : $"{Address.UrbanDistrict}, ")}" +
+                        $"{(Address.SovietVillage == null || Address.SovietVillage == "" ? "" : $"{Address.SovietVillage}, ")}" +
+                        $"{(Address.Locality == null || Address.Locality == "" ? "" : $"{Address.Locality}, ")}" +
+                        $"{(Address.Street == null || Address.Street == "" ? "" : $"{Address.Street}, ")}" +
+                        $"{(Address.Level1 == null || Address.Level1 == "" ? "" : $"{Address.Level1}, ")}" +
+                        $"{(Address.Level2 == null || Address.Level2 == "" ? "" : $"{Address.Level2}, ")}" +
+                        $"{(Address.Level3 == null || Address.Level3 == "" ? "" : $"{Address.Level3}, ")}" +
+                        $"{(Address.Apartment == null || Address.Apartment == "" ? "" : $"{Address.Apartment}, ")}" +
+                        $"{(Address.Other == null || Address.Other == "" ? "" : $"{Address.Other}, ")}";
+        }
+        private string OutputAddress(bool inBounds)
+        {
+            return $"Местоположение установлено относительно ориентира, расположенного {(inBounds == true ? "в границах участка. " : "за пределами участка. ")} " +
+                        $"Ориентир {(Elaboration == null ? "-" : Elaboration.ReferenceMark)}. " +
+                        $"Участок находится примерно в {(Elaboration == null ? "-" : Elaboration.Distance)} " +
+                        $"от ориентира по направлению на {(Elaboration == null ? "-" : Elaboration.Direction)}. " +
+                        $"Почтовый адрес ориентира: {(Address.Note != null || Address.Note != "" ? Address.Note : OutputAddress())}";
         }
     }
 
@@ -646,7 +735,7 @@ namespace ReaderXml
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
-                    switch (reader.Name)
+                    switch (reader.LocalName)
                     {
                         case "ReferenceMark":
                             {
@@ -671,13 +760,9 @@ namespace ReaderXml
         }
     }
 
-    public class Building : Address
+    public class Building : CadastralObject
     {
         #region Свойства
-        /// <summary>
-        /// Кадастровый номер
-        /// </summary>
-        public string CadastralNumber { get; set; }
 
         /// <summary>
         /// Координаты
@@ -690,21 +775,21 @@ namespace ReaderXml
         public string EntSys { get; set; }
 
         /// <summary>
-        /// Площадь
-        /// </summary>
-        public string Area { get; set; }
-
-        /// <summary>
         /// Назначение здания
         /// </summary>
         public string ObjectType { get; set; }
+
+        /// <summary>
+        /// Адрес
+        /// </summary>
+        public string Address { get; set; }
 
         /// <summary>
         /// Кадастровая стоимость
         /// </summary>
         public string CadastralCost { get; set; }
         #endregion
-        public Building(XmlReader reader)
+        public Building(XmlReader reader, Dictionary dictionary)
         {
             reader.Read();
             #region Присваиваем атрибуты Building
@@ -724,7 +809,7 @@ namespace ReaderXml
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
-                    switch (reader.Name)
+                    switch (reader.LocalName)
                     {
                         case "Area":
                             {
@@ -733,13 +818,15 @@ namespace ReaderXml
                             break;
                         case "ObjectType":
                             {
-                                ObjectType = reader.ReadElementContentAsString();
+                                string objectType = "";
+                                if (dictionary.ObjectType.TryGetValue(reader.ReadElementContentAsString(), out objectType))
+                                    ObjectType = objectType;
                             }
                             break;
-                        //------------- Как извлекать -----------------
                         case "Address":
                             {
-
+                                Location l = new Location(reader.ReadSubtree(), dictionary.AddressRegion);
+                                Address = l.GetAddress(false);
                             }
                             break;
                         case "CadastralCost":
@@ -751,12 +838,13 @@ namespace ReaderXml
                         case "EntitySpatial":
                             {
                                 reader.MoveToAttribute("EntSys");
-                                EntSys = Convert.ToString(reader.Value);
-                                //Как лучше извлекать?
-                                reader.MoveToContent();
-                                reader.ReadToDescendant("ns3:Ordinate");
-                                isCoordinates = true;
+                                string entSys = "";
+                                if (dictionary.CoordSystems.TryGetValue(Convert.ToString(reader.Value), out entSys))
+                                    EntSys = entSys;
                             }
+                            break;
+                        case "Ordinate":
+                            isCoordinates = true;
                             break;
                         default:
                             break;
@@ -766,7 +854,7 @@ namespace ReaderXml
         }
     }
 
-    public class Construction : Address
+    public class Construction
     {
         #region Свойства
         /// <summary>
@@ -785,14 +873,9 @@ namespace ReaderXml
         public string EntSys { get; set; }
 
         /// <summary>
-        /// Основные характеристики сооружения, тип характеристики
+        /// Основные характеристики сооружения
         /// </summary>
-        public string KeyParametersType { get; set; }
-
-        /// <summary>
-        /// Основные характеристики сооружения, значение
-        /// </summary>
-        public string KeyParametersValue { get; set; }
+        public string KeyParameters { get; set; }
 
         /// <summary>
         /// Вид объекта недвижимости
@@ -800,11 +883,16 @@ namespace ReaderXml
         public string ObjectType { get; set; }
 
         /// <summary>
+        /// Адрес
+        /// </summary>
+        public string Address { get; set; }
+
+        /// <summary>
         /// Кадастровая стоимость
         /// </summary>
         public string CadastralCost { get; set; }
         #endregion
-        public Construction(XmlReader reader)
+        public Construction(XmlReader reader, Dictionary dictionary)
         {
             reader.Read();
             #region Присваиваем атрибуты Construction
@@ -824,35 +912,19 @@ namespace ReaderXml
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
-                    switch (reader.Name)
+                    switch (reader.LocalName)
                     {
-                        case "ns4:KeyParameter":
-                            {
-                                while (reader.MoveToNextAttribute())
-                                {
-                                    switch (reader.Name)
-                                    {
-                                        case "Type":
-                                            KeyParametersType = reader.Value;
-                                            break;
-                                        case "Value":
-                                            KeyParametersValue = reader.Value;
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
-                            }
-                            break;
                         case "ObjectType":
                             {
-                                ObjectType = reader.ReadElementContentAsString();
+                                string objectType = "";
+                                if (dictionary.ObjectType.TryGetValue(reader.ReadElementContentAsString(), out objectType))
+                                    ObjectType = objectType;
                             }
                             break;
-                        //------------- Как извлекать -----------------
                         case "Address":
                             {
-
+                                Location l = new Location(reader.ReadSubtree(), dictionary.AddressRegion);
+                                Address = l.GetAddress(false);
                             }
                             break;
                         case "CadastralCost":
@@ -864,11 +936,37 @@ namespace ReaderXml
                         case "EntitySpatial":
                             {
                                 reader.MoveToAttribute("EntSys");
-                                EntSys = Convert.ToString(reader.Value);
-                                //Как лучше извлекать?
-                                reader.MoveToContent();
-                                reader.ReadToDescendant("ns3:Ordinate");
-                                isCoordinates = true;
+                                string entSys = "";
+                                if (dictionary.CoordSystems.TryGetValue(Convert.ToString(reader.Value), out entSys))
+                                    EntSys = entSys;
+                            }
+                            break;
+                        case "Ordinate":
+                            isCoordinates = true;
+                            break;
+                        case "KeyParameter":
+                            {
+                                string keyParamenter = "";
+                                reader.MoveToAttribute("Type");
+                                if (dictionary.KeyParameters.TryGetValue(reader.Value, out keyParamenter))
+                                {
+                                    
+                                    if (reader.Value == "05" || reader.Value == "06")
+                                    {
+                                        reader.MoveToAttribute("Value");
+                                        KeyParameters = keyParamenter + ": " + reader.Value + " кв.м.";
+                                    }
+                                    else if(reader.Value == "03")
+                                    {
+                                        reader.MoveToAttribute("Value");
+                                        KeyParameters = keyParamenter + ": " + reader.Value + " куб.м.";
+                                    }
+                                    else
+                                    {
+                                        reader.MoveToAttribute("Value");
+                                        KeyParameters = keyParamenter + ": " + reader.Value + " м.";
+                                    }
+                                }                                
                             }
                             break;
                         default:
@@ -879,7 +977,7 @@ namespace ReaderXml
         }
     }
 
-    public class Uncompleted : Address
+    public class Uncompleted
     {
         #region
         /// <summary>
@@ -898,9 +996,19 @@ namespace ReaderXml
         public string EntSys { get; set; }
 
         /// <summary>
+        /// Основные характеристики ОНС
+        /// </summary>
+        public string KeyParameters { get; set; }
+
+        /// <summary>
         /// Вид объекта недвижимости
         /// </summary>
         public string ObjectType { get; set; }
+
+        /// <summary>
+        /// Адрес
+        /// </summary>
+        public string Address { get; set; }
 
         /// <summary>
         /// Кадастровая стоимость
@@ -908,7 +1016,7 @@ namespace ReaderXml
         public string CadastralCost { get; set; }
         #endregion
 
-        public Uncompleted(XmlReader reader)
+        public Uncompleted(XmlReader reader, Dictionary dictionary)
         {
             reader.Read();
             #region Присваиваем атрибуты Construction
@@ -928,17 +1036,19 @@ namespace ReaderXml
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
-                    switch (reader.Name)
+                    switch (reader.LocalName)
                     {
                         case "ObjectType":
                             {
-                                ObjectType = reader.ReadElementContentAsString();
+                                string objectType = "";
+                                if (dictionary.ObjectType.TryGetValue(reader.ReadElementContentAsString(), out objectType))
+                                    ObjectType = objectType;
                             }
                             break;
-                        //------------- Как извлекать -----------------
                         case "Address":
                             {
-
+                                Location l = new Location(reader.ReadSubtree(), dictionary.AddressRegion);
+                                Address = l.GetAddress(false);
                             }
                             break;
                         case "CadastralCost":
@@ -950,11 +1060,37 @@ namespace ReaderXml
                         case "EntitySpatial":
                             {
                                 reader.MoveToAttribute("EntSys");
-                                EntSys = Convert.ToString(reader.Value);
-                                //Как лучше извлекать?
-                                reader.MoveToContent();
-                                reader.ReadToDescendant("ns3:Ordinate");
-                                isCoordinates = true;
+                                string entSys = "";
+                                if (dictionary.CoordSystems.TryGetValue(Convert.ToString(reader.Value), out entSys))
+                                    EntSys = entSys;
+                            }
+                            break;
+                        case "Ordinate":
+                            isCoordinates = true;
+                            break;
+                        case "KeyParameter":
+                            {
+                                string keyParamenter = "";
+                                reader.MoveToAttribute("Type");
+                                if (dictionary.KeyParameters.TryGetValue(reader.Value, out keyParamenter))
+                                {
+
+                                    if (reader.Value == "05" || reader.Value == "06")
+                                    {
+                                        reader.MoveToAttribute("Value");
+                                        KeyParameters = keyParamenter + ": " + reader.Value + " кв.м.";
+                                    }
+                                    else if (reader.Value == "03")
+                                    {
+                                        reader.MoveToAttribute("Value");
+                                        KeyParameters = keyParamenter + ": " + reader.Value + " куб.м.";
+                                    }
+                                    else
+                                    {
+                                        reader.MoveToAttribute("Value");
+                                        KeyParameters = keyParamenter + ": " + reader.Value + " м.";
+                                    }
+                                }
                             }
                             break;
                         default:
@@ -974,19 +1110,9 @@ namespace ReaderXml
         public string AccountNumber { get; set; }
 
         /// <summary>
-        /// Граница между субъектами Российской Федерации (наименование субъектов РФ)
+        /// Вид границы
         /// </summary>
-        public string SubjectsBoundary { get; set; }
-
-        /// <summary>
-        /// Граница муниципального образования (наименование муниципального образования)
-        /// </summary>
-        public string MunicipalBoundary { get; set; }
-
-        /// <summary>
-        /// Граница населенного пункта (наименование населенного пункта)
-        /// </summary>
-        public string InhabitedLocalityBoundary { get; set; }
+        public string TypeBoundary { get; set; }
 
         /// <summary>
         /// Наименование
@@ -1002,39 +1128,55 @@ namespace ReaderXml
         /// Система координат
         /// </summary>
         public string EntSys { get; set; }
+
+        /// <summary>
+        /// Дополнительная информация
+        /// </summary>
+        public string AdditionalInformation { get; set; }
         #endregion
-        public Bound(XmlReader reader)
+
+        public Bound(XmlReader reader, Dictionary dictionary)
         {
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
-                    switch (reader.Name)
+                    switch (reader.LocalName)
                     {
                         case "AccountNumber":
                             {
                                 AccountNumber = reader.ReadElementContentAsString();
                             }
                             break;
-                        case "SubjectsBoundary":
+                        case "NameNeighbours":
                             {
-                                reader.MoveToContent();
-                                reader.ReadToDescendant("NameNeighbours");
-                                SubjectsBoundary = reader.ReadElementContentAsString();
+                                TypeBoundary = "Граница между субъектами Российской Федерации";
+                                if (AdditionalInformation != null || AdditionalInformation != "")
+                                    AdditionalInformation += reader.ReadElementContentAsString();
+                                else
+                                    AdditionalInformation += ", " + reader.ReadElementContentAsString();
                             }
                             break;
                         case "MunicipalBoundary":
                             {
+                                TypeBoundary = "Граница муниципального образования";
                                 reader.MoveToContent();
                                 reader.ReadToDescendant("Name");
-                                MunicipalBoundary = reader.ReadElementContentAsString();
+                                if (AdditionalInformation != null || AdditionalInformation != "")
+                                    AdditionalInformation += reader.ReadElementContentAsString();
+                                else
+                                    AdditionalInformation += ", " + reader.ReadElementContentAsString();
                             }
                             break;
                         case "InhabitedLocalityBoundary":
                             {
+                                TypeBoundary = "Граница населенного пункта";
                                 reader.MoveToContent();
                                 reader.ReadToDescendant("Name");
-                                InhabitedLocalityBoundary = reader.ReadElementContentAsString();
+                                if (AdditionalInformation != null || AdditionalInformation != "")
+                                    AdditionalInformation += reader.ReadElementContentAsString();
+                                else
+                                    AdditionalInformation += ", " + reader.ReadElementContentAsString();
                             }
                             break;
                         case "Description":
@@ -1045,12 +1187,13 @@ namespace ReaderXml
                         case "EntitySpatial":
                             {
                                 reader.MoveToAttribute("EntSys");
-                                EntSys = Convert.ToString(reader.Value);
-                                //Как лучше извлекать?
-                                reader.MoveToContent();
-                                reader.ReadToDescendant("ns3:Ordinate");
-                                isCoordinates = true;
+                                string entSys = "";
+                                if (dictionary.CoordSystems.TryGetValue(Convert.ToString(reader.Value), out entSys))
+                                    EntSys = entSys;
                             }
+                            break;
+                        case "Ordinate":
+                            isCoordinates = true;
                             break;
                         default:
                             break;
@@ -1060,6 +1203,7 @@ namespace ReaderXml
         }
     }
 
+    //Дополнительная информация. PermittedUse не понятно 
     public class Zone
     {
         #region
@@ -1069,14 +1213,19 @@ namespace ReaderXml
         public string AccountNumber { get; set; }
 
         /// <summary>
+        /// Вид зоны
+        /// </summary>
+        public string TypeZone { get; set; }
+
+        /// <summary>
         /// Наименование
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Зона с особыми условиями использования территорий
+        /// Дополнительная информация
         /// </summary>
-        public string SpecialZone { get; set; }
+        public string AdditionalInformation { get; set; }
 
         /// <summary>
         /// Координаты
@@ -1089,13 +1238,13 @@ namespace ReaderXml
         public string EntSys { get; set; }
         #endregion
 
-        public Zone(XmlReader reader)
+        public Zone(XmlReader reader, Dictionary dictionary)
         {
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
-                    switch (reader.Name)
+                    switch (reader.LocalName)
                     {
                         case "AccountNumber":
                             {
@@ -1107,22 +1256,36 @@ namespace ReaderXml
                                 Description = reader.ReadElementContentAsString();
                             }
                             break;
-                        case "SpecialZone":
+                        case "ContentRestrictions":
                             {
-                                reader.MoveToContent();
-                                reader.ReadToDescendant("ContentRestrictions");
-                                SpecialZone = reader.ReadElementContentAsString();
+                                AdditionalInformation = reader.ReadElementContentAsString();
                             }
                             break;
+                        case "TerritorialZone":
+                            {
+                                TypeZone = "Территориальная зона";
+                            }
+                            break;
+                        case "SpecialZone":
+                            {
+                                TypeZone = "Зона с особыми условиями использования территорий";
+                            }
+                            break;
+                        //case "PermittedUse":
+                        //    {
+                        //        
+                        //    }
+                        //    break;
                         case "EntitySpatial":
                             {
                                 reader.MoveToAttribute("EntSys");
-                                EntSys = Convert.ToString(reader.Value);
-                                //Как лучше извлекать?
-                                reader.MoveToContent();
-                                reader.ReadToDescendant("ns3:Ordinate");
-                                isCoordinates = true;
+                                string entSys = "";
+                                if (dictionary.CoordSystems.TryGetValue(Convert.ToString(reader.Value), out entSys))
+                                    EntSys = entSys;
                             }
+                            break;
+                        case "Ordinate":
+                            isCoordinates = true;
                             break;
                         default:
                             break;
@@ -1167,7 +1330,7 @@ namespace ReaderXml
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
-                    switch (reader.Name)
+                    switch (reader.LocalName)
                     {
                         case "PNmb":
                             {
@@ -1202,4 +1365,14 @@ namespace ReaderXml
         }
     }
 
+    public class Dictionary
+    {
+        public Dictionary<string, string> AddressRegion { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> ParcelsName { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> ParcelsCategory { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> ParcelsUtilization { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> ObjectType { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> KeyParameters { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> CoordSystems { get; set; } = new Dictionary<string, string>();
+    }
 }
