@@ -40,6 +40,8 @@ namespace ReaderXml.KPT
         /// Система координат
         /// </summary>
         public string EntSys { get; set; }
+
+        private string PermitedAncillary { get; set; }
         #endregion
 
         public Zone()
@@ -79,13 +81,16 @@ namespace ReaderXml.KPT
                                 TypeZone = "Зона с особыми условиями использования территорий";
                             }
                             break;
-
-                        //Доделать 
                         case "PermittedUse":
                             {
-                                string str = "";
-                                if (reader.ReadToDescendant("TypePermittedUse"))
-                                    str = reader.ReadElementContentAsString();
+                                AdditionalInformation = ExtractingAdditionalInformation(reader, dictionary, AdditionalInformation);
+                                if (reader.LocalName == "PermitedAncillary")
+                                    goto case "PermitedAncillary";
+                            }
+                            break;
+                        case "PermitedAncillary":
+                            {
+                                PermitedAncillary = ExtractingAdditionalInformation(reader, dictionary, PermitedAncillary);
                             }
                             break;
                         case "EntitySpatial":
@@ -103,6 +108,42 @@ namespace ReaderXml.KPT
                     }
                 }
             }
+        }
+
+        private string ExtractingAdditionalInformation(XmlReader reader, Dictionary dictionary, string additionalInformation)
+        {
+            string perminttedUse = "", landUse = "", utilization = "";
+            if (reader.ReadToFollowing("TypePermittedUse"))
+            {
+                dictionary.PermitUse.TryGetValue(reader.ReadElementContentAsString(), out var str);
+                additionalInformation += $"{str}: ";
+            }
+            reader.MoveToContent();
+            if (reader.LocalName == "LandUse")
+            {
+                dictionary.LandUse.TryGetValue(reader.ReadElementContentAsString(), out var str);
+                landUse = $"{str}; ";
+                reader.MoveToContent();
+            }
+            if (reader.LocalName == "Utilization")
+            {
+                dictionary.Utilization.TryGetValue(reader.ReadElementContentAsString(), out var str);
+                utilization = $"{str}; ";
+                reader.MoveToContent();
+            }
+            if (reader.LocalName == "PermittedUse")
+            {
+                perminttedUse += $"{reader.ReadElementContentAsString()}; ";
+                reader.MoveToContent();
+            }
+
+            if (!String.IsNullOrEmpty(perminttedUse))
+                additionalInformation += perminttedUse;
+            else if (!String.IsNullOrEmpty(landUse))
+                additionalInformation += landUse;
+            else if (!String.IsNullOrEmpty(utilization))
+                additionalInformation += utilization;
+            return additionalInformation;
         }
     }
 }

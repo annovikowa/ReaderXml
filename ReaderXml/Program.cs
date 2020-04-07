@@ -14,14 +14,12 @@ namespace ReaderXml
     {
         static void Main(string[] args)
         {
-            //Зоны доделать
-
             List<string> listPath = new List<string>();
             listPath.Add(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\kpt10_doc27877366.xml");
             listPath.Add(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\76_13_041001_2016-07-01_kpt10.xml");
             listPath.Add(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\59_12_0230000_2016-07-07_kpt10.xml");
             listPath.Add(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\50_48_0000000_2016-06-29_kpt10.xml");
-            listPath.Add(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\50_15_0000000_2016-06-30_kpt10.xml");
+            //listPath.Add(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\50_15_0000000_2016-06-30_kpt10.xml");
 
             List<CadastralBlock> listKPT = new List<CadastralBlock>();
             foreach (var path in listPath)
