@@ -7,7 +7,6 @@ using System.Xml;
 
 namespace ReaderXml.KPT
 {
-    //Дополнительная информация. PermittedUse не понятно 
     public class Zone : ICadastralObject
     {
         #region
@@ -40,8 +39,6 @@ namespace ReaderXml.KPT
         /// Система координат
         /// </summary>
         public string EntSys { get; set; }
-
-        private string PermitedAncillary { get; set; }
         #endregion
 
         public Zone()
@@ -83,21 +80,15 @@ namespace ReaderXml.KPT
                             break;
                         case "PermittedUse":
                             {
-                                AdditionalInformation = ExtractingAdditionalInformation(reader, dictionary, AdditionalInformation);
-                                if (reader.LocalName == "PermitedAncillary")
-                                    goto case "PermitedAncillary";
-                            }
-                            break;
-                        case "PermitedAncillary":
-                            {
-                                PermitedAncillary = ExtractingAdditionalInformation(reader, dictionary, PermitedAncillary);
+                                var separator = string.IsNullOrWhiteSpace(AdditionalInformation) ? "" : "; ";
+                                AdditionalInformation += separator + ExtractingAdditionalInformation(reader.ReadSubtree(), dictionary);
+
                             }
                             break;
                         case "EntitySpatial":
                             {
                                 reader.MoveToAttribute("EntSys");
-                                if (dictionary.CoordSystems.TryGetValue(Convert.ToString(reader.Value), out var entSys))
-                                    EntSys = entSys;
+                                EntSys = reader.Value.ToString();
                             }
                             break;
                         case "Ordinate":
@@ -110,40 +101,57 @@ namespace ReaderXml.KPT
             }
         }
 
-        private string ExtractingAdditionalInformation(XmlReader reader, Dictionary dictionary, string additionalInformation)
+        /// <summary>
+        /// Получение допольнительной информации о зонах.
+        /// </summary>
+        /// <param name="reader">XmlReader узла видов разрешенных использований.</param>
+        /// <param name="dictionary">Словарь для перевода кодов в значения по схеме.</param>
+        /// <returns></returns>
+        private string ExtractingAdditionalInformation(XmlReader reader, Dictionary dictionary)
         {
-            string perminttedUse = "", landUse = "", utilization = "";
-            if (reader.ReadToFollowing("TypePermittedUse"))
+            var type = "";
+            var permittedUseText = "";
+            var landUse = "";
+            var utilization = "";
+            var ancillaries = new List<string>();
+            reader.Read();
+            while (reader.Read())
             {
-                dictionary.PermitUse.TryGetValue(reader.ReadElementContentAsString(), out var str);
-                additionalInformation += $"{str}: ";
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    switch (reader.LocalName)
+                    {
+                        case "TypePermittedUse":
+                            {
+                                dictionary.PermitUse.TryGetValue(reader.ReadElementContentAsString(), out type);
+                                break;
+                            }
+                        case "PermittedUse":
+                            {
+                                permittedUseText = reader.ReadElementContentAsString();
+                                break;
+                            }
+                        case "LandUse":
+                            {
+                                dictionary.LandUse.TryGetValue(reader.ReadElementContentAsString(), out landUse);
+                                break;
+                            }
+                        case "Utilization":
+                            {
+                                dictionary.Utilization.TryGetValue(reader.ReadElementContentAsString(), out utilization);
+                                break;
+                            }
+                        case "PermitedAncillary":
+                            {
+                                ancillaries.Add(ExtractingAdditionalInformation(reader.ReadSubtree(), dictionary));
+                                break;
+                            }
+                    }
+                }
             }
-            reader.MoveToContent();
-            if (reader.LocalName == "LandUse")
-            {
-                dictionary.LandUse.TryGetValue(reader.ReadElementContentAsString(), out var str);
-                landUse = $"{str}; ";
-                reader.MoveToContent();
-            }
-            if (reader.LocalName == "Utilization")
-            {
-                dictionary.Utilization.TryGetValue(reader.ReadElementContentAsString(), out var str);
-                utilization = $"{str}; ";
-                reader.MoveToContent();
-            }
-            if (reader.LocalName == "PermittedUse")
-            {
-                perminttedUse += $"{reader.ReadElementContentAsString()}; ";
-                reader.MoveToContent();
-            }
-
-            if (!String.IsNullOrEmpty(perminttedUse))
-                additionalInformation += perminttedUse;
-            else if (!String.IsNullOrEmpty(landUse))
-                additionalInformation += landUse;
-            else if (!String.IsNullOrEmpty(utilization))
-                additionalInformation += utilization;
-            return additionalInformation;
+            var text = new[] { permittedUseText, landUse, utilization }.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+            var additional = string.Join("; ", ancillaries);
+            return $"{type}, {text}{(string.IsNullOrWhiteSpace(additional) ? "" : $" (дополнительно: {additional})")}";
         }
     }
 }

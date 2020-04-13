@@ -14,19 +14,7 @@ namespace ReaderXml
     {
         static void Main(string[] args)
         {
-            List<string> listPath = new List<string>();
-            listPath.Add(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\kpt10_doc27877366.xml");
-            listPath.Add(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\76_13_041001_2016-07-01_kpt10.xml");
-            listPath.Add(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\59_12_0230000_2016-07-07_kpt10.xml");
-            listPath.Add(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\50_48_0000000_2016-06-29_kpt10.xml");
-            //listPath.Add(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\50_15_0000000_2016-06-30_kpt10.xml");
-
-            List<CadastralBlock> listKPT = new List<CadastralBlock>();
-            foreach (var path in listPath)
-            {
-                CadastralBlock kpt = new CadastralBlock(path);
-                listKPT.Add(kpt);
-            }
+            CadastralPlanTerritory KPT = new CadastralPlanTerritory(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\50_48_0000000_2016-06-29_kpt10.xml");
 
             #region Лист сводная информация
             var wb = new XLWorkbook();
@@ -35,6 +23,11 @@ namespace ReaderXml
             ws.Cell("B1").Value = "Наименование органа регистрации прав";
             ws.Cell("C1").Value = "Номер и дата выдачи КПТ";
             ws.Cell("D1").Value = "ФИО и должность сотрудника, который выдал КПТ"; //Может как в схеме названть "Должностное лицо"?
+            ws.Cell("B2").Value = KPT.Organization;
+            ws.Cell("C2").Value = KPT.Date;
+            ws.Cell("C2").Style.DateFormat.Format = "yyyy-MM-dd";
+            ws.Cell("C2").Value += ", " + KPT.Number;
+            ws.Cell("D2").Value = KPT.Official;
             #endregion
 
             #region Лист кадастровые кварталы
@@ -45,11 +38,11 @@ namespace ReaderXml
             #endregion
 
             IXLWorksheet wsParcels = null, wsBuildings = null, wsConstructions = null, wsUncompleteds = null, wsBounds = null, wsZones = null, wsOMSPoint = null;
-            int numberObjKpt = 2;
+            int numberObjKpt = 3;
             int quarter = 2;
             int numberParcels = 2, numberBuilding = 2, numberConstruction = 2, numberUncompleted = 2, numberBound = 2, numberZone = 2, numberOMS = 2;
 
-            foreach (var kpt in listKPT)
+            foreach (var kpt in KPT.CadastralBlocks)
             {
                 #region Перечисление земельных участков
                 if (kpt.Parcels.Count > 0)
@@ -204,20 +197,8 @@ namespace ReaderXml
                 }
                 #endregion
             }
-            foreach (var kpt in listKPT)
+            foreach (var kpt in KPT.CadastralBlocks)
             {
-                #region Лист сводная информация 
-                ws.Cell(numberObjKpt, "B").Value = kpt.Organization;
-                ws.Cell(numberObjKpt, "C").Value = kpt.Date;
-                ws.Cell(numberObjKpt, "C").Style.DateFormat.Format = "yyyy-MM-dd";
-                ws.Cell(numberObjKpt, "C").Value += ", " + kpt.Number;
-                ws.Cell(numberObjKpt++, "D").Value = kpt.Official;
-
-                ws.Cell(numberObjKpt, "A").Value = "Кадастровый номер";
-                ws.Cell(numberObjKpt, "B").Value = "Вид объекта";
-                ws.Cell(numberObjKpt++, "C").Value = "Наличие/отсутствие координат";
-                #endregion
-
                 #region Лист кадастровые кварталы
                 wsCadastral.Cell(quarter, "A").Value = kpt.CadastralNumber;
                 wsCadastral.Cell(quarter, "B").Value = kpt.isCoordinates;

@@ -93,8 +93,7 @@ namespace ReaderXml.KPT
                         case "EntitySpatial":
                             {
                                 reader.MoveToAttribute("EntSys");
-                                if (dictionary.CoordSystems.TryGetValue(reader.Value.ToString(), out var entSys))
-                                    EntSys = entSys;
+                                EntSys = reader.Value.ToString();
                             }
                             break;
                         case "Ordinate":

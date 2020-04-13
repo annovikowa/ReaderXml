@@ -9,6 +9,7 @@ namespace ReaderXml
 {
     public interface ICadastralObject
     {
+        string EntSys { get; set; }
         /// <summary>
         /// Инициализация кадастрового объекта
         /// </summary>

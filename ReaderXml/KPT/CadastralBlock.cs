@@ -13,31 +13,6 @@ namespace ReaderXml.KPT
     {
         #region
         /// <summary>
-        /// Название файла
-        /// </summary>
-        public string FileName { get; set; }
-
-        /// <summary>
-        /// Наименование органа кадастрового учета
-        /// </summary>
-        public string Organization { get; set; }
-
-        /// <summary>
-        /// Дата
-        /// </summary>
-        public DateTime Date { get; set; }
-
-        /// <summary>
-        /// Номер документа
-        /// </summary>
-        public string Number { get; set; }
-
-        /// <summary>
-        /// Должностное лицо
-        /// </summary>
-        public string Official { get; set; }
-
-        /// <summary>
         /// Координаты
         /// </summary>
         public bool isCoordinates { get; set; }
@@ -79,111 +54,87 @@ namespace ReaderXml.KPT
 
         private List<string> ListDictionary { get; } = new List<string>() { "dRegionsRF_v01", "dParcels_v01", "dCategories_v01", "dAllowedUse_v02",
             "dUtilizations_v01", "dRealty_v03", "dTypeParameter_v01", "dPermitUse_v01", "_AddressOut_v04" };
+
+        private Dictionary<string, string> CoordSystem { get; set; }
         #endregion
-        public CadastralBlock(string fileName)
+        public CadastralBlock(XmlReader reader)
         {
-            var dictionary = FillDictionary(fileName);
-            using (var reader = XmlReader.Create(fileName, new XmlReaderSettings() { DtdProcessing = DtdProcessing.Parse }))
+            var dictionary = FillDictionary();
+            while (reader.Read())
             {
-                while (reader.Read())
+                if (reader.NodeType == XmlNodeType.Element)
                 {
-                    if (reader.NodeType == XmlNodeType.Element)
+                    switch (reader.LocalName)
                     {
-                        switch (reader.LocalName)
-                        {
-                            case "Total":
-                                {
-                                    Area = $"{reader.ReadElementContentAsString()} Га";
-                                }
-                                break;
-                            case "CadastralBlock":
-                                {
-                                    reader.MoveToAttribute("CadastralNumber");
-                                    CadastralNumber = reader.Value;
-                                }
-                                break;
-                            case "Parcel":
-                                {
-                                    Parcels.Add(AddNew(new Parcel(), reader.ReadSubtree(), dictionary));
-                                }
-                                break;
-                            case "Building":
-                                {
-                                    Buildings.Add(AddNew(new Building(), reader.ReadSubtree(), dictionary));
-                                }
-                                break;
-                            case "Construction":
-                                {
-                                    Constructions.Add(AddNew(new Construction(), reader.ReadSubtree(), dictionary));
-                                }
-                                break;
-                            case "Uncompleted":
-                                {
-                                    Uncompleteds.Add(AddNew(new Uncompleted(), reader.ReadSubtree(), dictionary));
-                                }
-                                break;
-                            case "Bound":
-                                {
-                                    Bounds.Add(AddNew(new Bound(), reader.ReadSubtree(), dictionary));
-                                }
-                                break;
-                            case "Zone":
-                                {
-                                    Zones.Add(AddNew(new Zone(), reader.ReadSubtree(), dictionary));
-                                }
-                                break;
-                            case "OMSPoint":
-                                {
-                                    OMSPoints.Add(AddNew(new OMSPoint(), reader.ReadSubtree(), null));
-                                }
-                                break;
-                            case "Organization":
-                                {
-                                    Organization = reader.ReadElementContentAsString();
-                                }
-                                break;
-                            case "Ordinate":
-                                {
-                                    isCoordinates = true;
-                                }
-                                break;
-                            case "Date":
-                                {
-                                    Date = reader.ReadElementContentAsDateTime();
-                                }
-                                break;
-                            case "Number":
-                                {
-                                    Number = reader.ReadElementContentAsString();
-                                }
-                                break;
-                            case "Appointment":
-                                {
-                                    Official += $"{reader.ReadElementContentAsString()}, ";
-                                }
-                                break;
-                            case "FamilyName":
-                                {
-                                    Official += $"{reader.ReadElementContentAsString()} ";
-                                }
-                                break;
-                            case "FirstName":
-                                {
-                                    Official += $"{reader.ReadElementContentAsString()} ";
-                                }
-                                break;
-                            case "Patronymic":
-                                {
-                                    Official += $"{reader.ReadElementContentAsString()}";
-                                }
-                                break;
-                        }
+                        case "Total":
+                            {
+                                Area = $"{reader.ReadElementContentAsString()} Га";
+                            }
+                            break;
+                        case "CadastralBlock":
+                            {
+                                reader.MoveToAttribute("CadastralNumber");
+                                CadastralNumber = reader.Value;
+                            }
+                            break;
+                        case "Parcel":
+                            {
+                                Parcels.Add(AddNew(new Parcel(), reader.ReadSubtree(), dictionary));
+                            }
+                            break;
+                        case "Building":
+                            {
+                                Buildings.Add(AddNew(new Building(), reader.ReadSubtree(), dictionary));
+                            }
+                            break;
+                        case "Construction":
+                            {
+                                Constructions.Add(AddNew(new Construction(), reader.ReadSubtree(), dictionary));
+                            }
+                            break;
+                        case "Uncompleted":
+                            {
+                                Uncompleteds.Add(AddNew(new Uncompleted(), reader.ReadSubtree(), dictionary));
+                            }
+                            break;
+                        case "Bound":
+                            {
+                                Bounds.Add(AddNew(new Bound(), reader.ReadSubtree(), dictionary));
+                            }
+                            break;
+                        case "Zone":
+                            {
+                                Zones.Add(AddNew(new Zone(), reader.ReadSubtree(), dictionary));
+                            }
+                            break;
+                        case "OMSPoint":
+                            {
+                                OMSPoints.Add(AddNew(new OMSPoint(), reader.ReadSubtree(), null));
+                            }
+                            break;
+                        case "CoordSystems":
+                            {
+                                this.CoordSystem = FillDictionary(reader.ReadSubtree());
+                            }
+                            break;
+                        case "Ordinate":
+                            {
+                                isCoordinates = true;
+                            }
+                            break;
+
                     }
                 }
             }
+            DefiningCoordinateSystem(Parcels);
+            DefiningCoordinateSystem(Buildings);
+            DefiningCoordinateSystem(Constructions);
+            DefiningCoordinateSystem(Uncompleteds);
+            DefiningCoordinateSystem(Bounds);
+            DefiningCoordinateSystem(Zones);
         }
 
-        private Dictionary FillDictionary(string fileName)
+        private Dictionary FillDictionary()
         {
             Dictionary dictionary = new Dictionary();
             var nsManager = new XmlNamespaceManager(new NameTable());
@@ -245,37 +196,47 @@ namespace ReaderXml.KPT
                         break;
                 }
             }
-
-            using (var reader = XmlReader.Create(fileName, new XmlReaderSettings() { DtdProcessing = DtdProcessing.Parse }))
+            return dictionary;
+        }
+        private Dictionary<string, string> FillDictionary(XmlReader reader)
+        {
+            var dictionary = new Dictionary<string, string>();
+            reader.ReadToDescendant("CoordSystems");
+            while (reader.Read())
             {
-                reader.ReadToDescendant("CoordSystems");
-                while (reader.Read())
+                if (reader.LocalName == "CoordSystem")
                 {
-                    if (reader.LocalName == "CoordSystem")
-                    {
-                        reader.MoveToAttribute("CsId").ToString();
-                        string CsId = reader.Value;
-                        reader.MoveToAttribute("Name");
-                        dictionary.CoordSystems.Add(CsId, reader.Value);
-                    }
+                    reader.MoveToAttribute("CsId").ToString();
+                    string CsId = reader.Value;
+                    reader.MoveToAttribute("Name");
+                    dictionary.Add(CsId, reader.Value);
                 }
             }
             return dictionary;
-        }
-
+        }        
         private Dictionary<string, string> FillDictionary(XElement xsd, XmlNamespaceManager nsManager)
         {
             return xsd.XPathSelectElements(".//xs:enumeration", nsManager)
                 .ToDictionary(x => x.XPathEvaluate("string(@value)").ToString(),
                 x => x.XPathEvaluate("string(./xs:annotation/xs:documentation)", nsManager).ToString());
         }
-
         private T AddNew<T>(T obj, XmlReader reader, Dictionary dictionary) where T : ICadastralObject, new()
         {
             obj = new T();
             obj.Init(reader, dictionary);
             reader.Close();
             return obj;
+        }
+        private void DefiningCoordinateSystem<T>(List<T> obj) where T : ICadastralObject
+        {
+            foreach (var p in obj)
+            {
+                if (!String.IsNullOrEmpty(p.EntSys))
+                {
+                    if (CoordSystem.TryGetValue(p.EntSys, out var entSys))
+                        p.EntSys = entSys;
+                }
+            }
         }
     }
 }

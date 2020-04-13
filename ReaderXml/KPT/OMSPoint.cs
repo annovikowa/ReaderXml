@@ -34,6 +34,7 @@ namespace ReaderXml.KPT
         /// Координата У
         /// </summary>
         public decimal OrdY { get; set; }
+        public string EntSys { get; set ; }
         #endregion
 
         public OMSPoint()
