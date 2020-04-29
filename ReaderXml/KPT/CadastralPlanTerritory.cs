@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace ReaderXml.KPT
 {
@@ -36,9 +38,12 @@ namespace ReaderXml.KPT
 
         public List<CadastralBlock> CadastralBlocks { get; set; } = new List<CadastralBlock>();
 
+        private List<string> ListDictionary { get; } = new List<string>() { "dRegionsRF_v01", "dParcels_v01", "dCategories_v01", "dAllowedUse_v02",
+            "dUtilizations_v01", "dRealty_v03", "dTypeParameter_v01", "dPermitUse_v01", "_AddressOut_v04" };
+
         public CadastralPlanTerritory (string fileName)
-        {          
-            using(var reader = XmlReader.Create(fileName, new XmlReaderSettings() { DtdProcessing = DtdProcessing.Parse }))
+        {            
+            using (var reader = XmlReader.Create(fileName, new XmlReaderSettings() { DtdProcessing = DtdProcessing.Parse }))
             {
                 while (reader.Read())
                 {
@@ -49,7 +54,7 @@ namespace ReaderXml.KPT
                             case "CadastralBlock":
                                 {
                                     var inner = reader.ReadSubtree();
-                                    CadastralBlocks.Add(new CadastralBlock(inner));
+                                    CadastralBlocks.Add(new CadastralBlock(inner, FillXsdClassifiers()));
                                     inner.Close();
                                 }
                                 break;
@@ -96,6 +101,75 @@ namespace ReaderXml.KPT
             }
         }
 
-        
+        private XsdClassifiers FillXsdClassifiers()
+        {
+            XsdClassifiers dictionary = new XsdClassifiers();
+            var nsManager = new XmlNamespaceManager(new NameTable());
+            nsManager.AddNamespace("xs", "http://www.w3.org/2001/XMLSchema");
+
+            foreach (var list in ListDictionary)
+            {
+                var xsd = XElement.Load(@$"D:\ReaderXml\ReaderXml\КПТ\Схемы\KPT_v10\SchemaCommon\{list}.xsd");
+                switch (list)
+                {
+                    case "dRegionsRF_v01":
+                        {
+                            dictionary.AddressRegion = FillXsdClassifiers(xsd, nsManager);
+                        }
+                        break;
+                    case "dParcels_v01":
+                        {
+                            dictionary.ParcelsName = FillXsdClassifiers(xsd, nsManager);
+                        }
+                        break;
+                    case "dCategories_v01":
+                        {
+                            dictionary.ParcelsCategory = FillXsdClassifiers(xsd, nsManager);
+                        }
+                        break;
+                    case "dUtilizations_v01":
+                        {
+                            dictionary.Utilization = FillXsdClassifiers(xsd, nsManager);
+                        }
+                        break;
+                    case "dAllowedUse_v02":
+                        {
+                            dictionary.LandUse = FillXsdClassifiers(xsd, nsManager);
+                        }
+                        break;
+                    case "dRealty_v03":
+                        {
+                            dictionary.ObjectType = FillXsdClassifiers(xsd, nsManager);
+                        }
+                        break;
+                    case "dTypeParameter_v01":
+                        {
+                            dictionary.KeyParameters = FillXsdClassifiers(xsd, nsManager);
+                        }
+                        break;
+                    case "dPermitUse_v01":
+                        {
+                            dictionary.PermitUse = FillXsdClassifiers(xsd, nsManager);
+                        }
+                        break;
+                    case "_AddressOut_v04":
+                        {
+                            dictionary.AddressOut = xsd.XPathSelectElements(".//xs:element", nsManager)
+                                 .ToDictionary(x => x.XPathEvaluate("string(@name)").ToString(),
+                                 x => x.XPathEvaluate("string(./xs:annotation/xs:documentation)", nsManager).ToString());
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return dictionary;
+        }
+        private Dictionary<string, string> FillXsdClassifiers(XElement xsd, XmlNamespaceManager nsManager)
+        {
+            return xsd.XPathSelectElements(".//xs:enumeration", nsManager)
+                .ToDictionary(x => x.XPathEvaluate("string(@value)").ToString(),
+                x => x.XPathEvaluate("string(./xs:annotation/xs:documentation)", nsManager).ToString());
+        }
     }
 }

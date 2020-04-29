@@ -45,7 +45,7 @@ namespace ReaderXml.KPT
         {
         }
 
-        public void Init(XmlReader reader, Dictionary dictionary)
+        public void Init(XmlReader reader, XsdClassifiers dictionary)
         {
             while (reader.Read())
             {
@@ -107,7 +107,7 @@ namespace ReaderXml.KPT
         /// <param name="reader">XmlReader узла видов разрешенных использований.</param>
         /// <param name="dictionary">Словарь для перевода кодов в значения по схеме.</param>
         /// <returns></returns>
-        private string ExtractingAdditionalInformation(XmlReader reader, Dictionary dictionary)
+        private string ExtractingAdditionalInformation(XmlReader reader, XsdClassifiers dictionary)
         {
             var type = "";
             var permittedUseText = "";
@@ -149,8 +149,9 @@ namespace ReaderXml.KPT
                     }
                 }
             }
+            reader.Close();
             var text = new[] { permittedUseText, landUse, utilization }.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
-            var additional = string.Join("; ", ancillaries);
+            var additional = string.Join("; ", ancillaries);            
             return $"{type}, {text}{(string.IsNullOrWhiteSpace(additional) ? "" : $" (дополнительно: {additional})")}";
         }
     }

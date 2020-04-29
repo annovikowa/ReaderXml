@@ -64,7 +64,7 @@
     <Compile Include="KPT\CadastralBlock.cs" />
     <Compile Include="KPT\CadastralPlanTerritory.cs" />
     <Compile Include="KPT\CadastralObject.cs" />
-    <Compile Include="KPT\Dictionary.cs" />
+    <Compile Include="KPT\XsdClassifiers.cs" />
     <Compile Include="KPT\OMSPoint.cs" />
     <Compile Include="KPT\Construction.cs" />
     <Compile Include="KPT\Parcel.cs" />

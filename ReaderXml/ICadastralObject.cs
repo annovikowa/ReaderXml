@@ -15,6 +15,6 @@ namespace ReaderXml
         /// </summary>
         /// <param name="reader">Экземпляр XmlReader</param>
         /// <param name="dictionary">Необходимый словарь</param>
-        void Init(XmlReader reader, KPT.Dictionary dictionary);
+        void Init(XmlReader reader, KPT.XsdClassifiers dictionary);
     }
 }

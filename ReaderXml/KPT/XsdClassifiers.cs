@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReaderXml.KPT
 {
-    public class Dictionary
+    public class XsdClassifiers
     {
         public Dictionary<string, string> AddressRegion { get; set; } = new Dictionary<string, string>();
         public Dictionary<string, string> ParcelsName { get; set; } = new Dictionary<string, string>();
@@ -15,7 +15,6 @@ namespace ReaderXml.KPT
         public Dictionary<string, string> LandUse { get; set; } = new Dictionary<string, string>();
         public Dictionary<string, string> ObjectType { get; set; } = new Dictionary<string, string>();
         public Dictionary<string, string> KeyParameters { get; set; } = new Dictionary<string, string>();
-        public Dictionary<string, string> CoordSystems { get; set; } = new Dictionary<string, string>();
         public Dictionary<string, string> PermitUse { get; set; } = new Dictionary<string, string>();
         public Dictionary<string, string> AddressOut { get; set; } = new Dictionary<string, string>();
     }

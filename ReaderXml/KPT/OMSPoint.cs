@@ -41,7 +41,7 @@ namespace ReaderXml.KPT
         {
         }
 
-        public void Init(XmlReader reader, Dictionary dictionary)
+        public void Init(XmlReader reader, XsdClassifiers dictionary)
         {
             while (reader.Read())
             {
