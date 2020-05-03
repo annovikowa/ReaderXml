@@ -7,6 +7,8 @@ using System.Xml;
 using System.Xml.Schema;
 using ClosedXML.Excel;
 using ReaderXml.KPT;
+using ReaderXml.ECPT;
+
 
 namespace ReaderXml
 {
@@ -14,7 +16,10 @@ namespace ReaderXml
     {
         static void Main(string[] args)
         {
+            ExtractCadastralPlanTerritory ECPT = new ExtractCadastralPlanTerritory(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\extract_cadastral_plan_territory\24_54_0105002_2017-06-01_kpt11.xml");
+
             CadastralPlanTerritory KPT = new CadastralPlanTerritory(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\50_48_0000000_2016-06-29_kpt10.xml");
+
 
             #region Лист сводная информация
             var wb = new XLWorkbook();
