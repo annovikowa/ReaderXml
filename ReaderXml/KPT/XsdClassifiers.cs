@@ -16,6 +16,5 @@ namespace ReaderXml.KPT
         public Dictionary<string, string> ObjectType { get; set; } = new Dictionary<string, string>();
         public Dictionary<string, string> KeyParameters { get; set; } = new Dictionary<string, string>();
         public Dictionary<string, string> PermitUse { get; set; } = new Dictionary<string, string>();
-        public Dictionary<string, string> AddressOut { get; set; } = new Dictionary<string, string>();
     }
 }

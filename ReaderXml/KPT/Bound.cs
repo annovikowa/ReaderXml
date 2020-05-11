@@ -7,43 +7,38 @@ using System.Xml;
 
 namespace ReaderXml.KPT
 {
+    /// <summary>
+    /// Граница.
+    /// </summary>
     public class Bound : ICadastralObject
     {
-        #region
+        #region Свойства
         /// <summary>
-        /// Учетный номер
+        /// Учетный номер.
         /// </summary>
         public string AccountNumber { get; set; }
 
         /// <summary>
-        /// Вид границы
+        /// Вид границы.
         /// </summary>
         public string TypeBoundary { get; set; }
 
         /// <summary>
-        /// Наименование
+        /// Наименование.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Координаты
+        /// Координаты.
         /// </summary>
         public bool isCoordinates { get; set; }
 
         /// <summary>
-        /// Система координат
-        /// </summary>
-        public string EntSys { get; set; }
-
-        /// <summary>
-        /// Дополнительная информация
+        /// Дополнительная информация.
         /// </summary>
         public string AdditionalInformation { get; set; }
+        public string CoorSys { get; set; }
         #endregion
-
-        public Bound()
-        {
-        }
 
         public void Init(XmlReader reader, XsdClassifiers dictionary)
         {
@@ -70,7 +65,6 @@ namespace ReaderXml.KPT
                         case "MunicipalBoundary":
                             {
                                 TypeBoundary = "Граница муниципального образования";
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("Name");
                                 if (String.IsNullOrEmpty(AdditionalInformation))
                                     AdditionalInformation += reader.ReadElementContentAsString();
@@ -81,7 +75,6 @@ namespace ReaderXml.KPT
                         case "InhabitedLocalityBoundary":
                             {
                                 TypeBoundary = "Граница населенного пункта";
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("Name");
                                 if (String.IsNullOrEmpty(AdditionalInformation))
                                     AdditionalInformation += reader.ReadElementContentAsString();
@@ -97,7 +90,7 @@ namespace ReaderXml.KPT
                         case "EntitySpatial":
                             {
                                 reader.MoveToAttribute("EntSys");
-                                EntSys = reader.Value.ToString();
+                                CoorSys = reader.Value.ToString();
                             }
                             break;
                         case "Ordinate":

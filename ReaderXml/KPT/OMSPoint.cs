@@ -7,39 +7,38 @@ using System.Xml;
 
 namespace ReaderXml.KPT
 {
+    /// <summary>
+    /// Пункт ОМС.
+    /// </summary>
     public class OMSPoint : ICadastralObject
     {
-        #region
+        #region Свойства
         /// <summary>
-        /// Номер пункта опорной межевой сети на плане
+        /// Номер пункта опорной межевой сети на плане.
         /// </summary>
         public string PNmb { get; set; }
 
         /// <summary>
-        /// Название и тип пункта
+        /// Название и тип пункта.
         /// </summary>
         public string PName { get; set; }
 
         /// <summary>
-        /// Класс геодезической сети
+        /// Класс геодезической сети.
         /// </summary>
         public string PKlass { get; set; }
 
         /// <summary>
-        /// Координата Х
+        /// Координата Х.
         /// </summary>
         public decimal OrdX { get; set; }
 
         /// <summary>
-        /// Координата У
+        /// Координата У.
         /// </summary>
         public decimal OrdY { get; set; }
-        public string EntSys { get; set ; }
+        public string CoorSys { get; set; }
         #endregion
-
-        public OMSPoint()
-        {
-        }
 
         public void Init(XmlReader reader, XsdClassifiers dictionary)
         {

@@ -7,40 +7,29 @@ using System.Xml;
 
 namespace ReaderXml.KPT
 {
-    public class Building : CadastralObject, ICadastralObject
+    /// <summary>
+    /// Здание.
+    /// </summary>
+    public class Building : CadastralObject
     {
         #region Свойства
-
         /// <summary>
-        /// Координаты
-        /// </summary>
-        public bool isCoordinates { get; set; }
-
-        /// <summary>
-        /// Система координат
-        /// </summary>
-        public string EntSys { get; set; }
-
-        /// <summary>
-        /// Назначение здания
+        /// Назначение здания.
         /// </summary>
         public string ObjectType { get; set; }
 
         /// <summary>
-        /// Адрес
+        /// Адрес.
         /// </summary>
         public string Address { get; set; }
 
         /// <summary>
-        /// Кадастровая стоимость
+        /// Кадастровая стоимость.
         /// </summary>
         public string CadastralCost { get; set; }
         #endregion
-        public Building()
-        {
-        }
 
-        public void Init(XmlReader reader, XsdClassifiers dictionary)
+        public override void Init(XmlReader reader, XsdClassifiers dictionary)
         {
             reader.Read();
             #region Присваиваем атрибуты Building
@@ -76,7 +65,7 @@ namespace ReaderXml.KPT
                         case "Address":
                             {
                                 var inner = reader.ReadSubtree();
-                                Address = new Location(inner, dictionary.AddressRegion, dictionary.AddressOut)?.GetAddress(false);
+                                Address = new Location(inner, dictionary.AddressRegion)?.GetAddress(false);
                                 inner.Close();
                             }
                             break;
@@ -89,7 +78,7 @@ namespace ReaderXml.KPT
                         case "EntitySpatial":
                             {
                                 reader.MoveToAttribute("EntSys");
-                                EntSys = reader.Value.ToString();
+                                CoorSys = reader.Value.ToString();
                             }
                             break;
                         case "Ordinate":

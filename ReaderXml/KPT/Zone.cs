@@ -7,43 +7,38 @@ using System.Xml;
 
 namespace ReaderXml.KPT
 {
+    /// <summary>
+    /// Зона.
+    /// </summary>
     public class Zone : ICadastralObject
     {
-        #region
+        #region Свойства
         /// <summary>
-        /// Учетный номер
+        /// Учетный номер.
         /// </summary>
         public string AccountNumber { get; set; }
 
         /// <summary>
-        /// Вид зоны
+        /// Вид зоны.
         /// </summary>
         public string TypeZone { get; set; }
 
         /// <summary>
-        /// Наименование
+        /// Наименование.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Дополнительная информация
+        /// Дополнительная информация.
         /// </summary>
         public string AdditionalInformation { get; set; }
 
         /// <summary>
-        /// Координаты
+        /// Координаты.
         /// </summary>
         public bool isCoordinates { get; set; }
-
-        /// <summary>
-        /// Система координат
-        /// </summary>
-        public string EntSys { get; set; }
+        public string CoorSys { get; set; }
         #endregion
-
-        public Zone()
-        {
-        }
 
         public void Init(XmlReader reader, XsdClassifiers dictionary)
         {
@@ -88,7 +83,7 @@ namespace ReaderXml.KPT
                         case "EntitySpatial":
                             {
                                 reader.MoveToAttribute("EntSys");
-                                EntSys = reader.Value.ToString();
+                                CoorSys = reader.Value.ToString();
                             }
                             break;
                         case "Ordinate":
@@ -102,11 +97,11 @@ namespace ReaderXml.KPT
         }
 
         /// <summary>
-        /// Получение допольнительной информации о зонах.
+        /// Получение дополнительной информации о зонах.
         /// </summary>
         /// <param name="reader">XmlReader узла видов разрешенных использований.</param>
         /// <param name="dictionary">Словарь для перевода кодов в значения по схеме.</param>
-        /// <returns></returns>
+        /// <returns>Дополнительную информацию о зонах.</returns>
         private string ExtractingAdditionalInformation(XmlReader reader, XsdClassifiers dictionary)
         {
             var type = "";

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReaderXml.KPT;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,41 +8,45 @@ using System.Xml;
 
 namespace ReaderXml.ECPT
 {
+    /// <summary>
+    /// Граница.
+    /// </summary>
     public class SubjectBoundary : ICadastralObject
     {
+        #region Свойства
         /// <summary>
-        /// Учетный номер
+        /// Учетный номер.
         /// </summary>
         public string RegNumbBorder { get; set; }
 
         /// <summary>
-        /// Вид границы
+        /// Вид границы.
         /// </summary>
         public string TypeBoundary { get; set; }
 
         /// <summary>
-        /// Наименование
+        /// Наименование.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Дата постановки на учет
+        /// Дата постановки на учет.
         /// </summary>
         public string RegistrationDate { get; set; }
 
         /// <summary>
-        /// Координаты
+        /// Координаты.
         /// </summary>
         public bool isCoordinates { get; set; }
 
-        public string SkId { get; set; }
-
         /// <summary>
-        /// Дополнительная информация
+        /// Дополнительная информация.
         /// </summary>
         public string AdditionalInformation { get; set; }
-
-        public void Init(XmlReader reader)
+        public string CoorSys { get; set; }
+        #endregion
+        
+        public void Init(XmlReader reader, XsdClassifiers dictionary = null)
         {
             while (reader.Read())
             {
@@ -61,7 +66,6 @@ namespace ReaderXml.ECPT
                             break;
                         case "type_boundary":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("value");
                                 TypeBoundary = reader.ReadElementContentAsString();
                             }
@@ -73,7 +77,7 @@ namespace ReaderXml.ECPT
                             break;
                         case "sk_id":
                             {
-                                SkId = reader.ReadElementContentAsString();
+                                CoorSys = reader.ReadElementContentAsString();
                             }
                             break;
                         case "neighbour_regions":

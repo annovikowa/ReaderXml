@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReaderXml.KPT;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,26 +8,29 @@ using System.Xml;
 
 namespace ReaderXml.ECPT
 {
+    /// <summary>
+    /// Проект межевания.
+    /// </summary>
     public class SurveyingProject : ICadastralObject
     {
         /// <summary>
-        /// Учетный номер ПМТ
+        /// Учетный номер ПМТ.
         /// </summary>
         public string SurveyProjectNum { get; set; }
 
         /// <summary>
-        /// Условный номер ЗУ
+        /// Условный номер ЗУ.
         /// </summary>
         public string NominalNumber { get; set; }
 
         /// <summary>
-        /// Координаты
+        /// Координаты.
         /// </summary>
         public bool isCoordinates { get; set; }
 
-        public string SkId { get; set; }
+        public string CoorSys { get; set; }
 
-        public void Init(XmlReader reader)
+        public void Init(XmlReader reader, XsdClassifiers dictionary = null)
         {
             while (reader.Read())
             {
@@ -46,9 +50,8 @@ namespace ReaderXml.ECPT
                             break;
                         case "entity_spatial":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("sk_id");
-                                SkId = reader.ReadElementContentAsString();
+                                CoorSys = reader.ReadElementContentAsString();
                             }
                             break;
                         case "ordinate":

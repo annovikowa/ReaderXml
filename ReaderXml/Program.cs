@@ -222,7 +222,7 @@ namespace ReaderXml
                                           CadastralNumber = p.CadastralNumber,
                                           CadastralNumberKPT = cadastralNumberKPT,
                                           isCoordinates = p.isCoordinates,
-                                          EntSys = p.EntSys,
+                                          EntSys = p.CoorSys,
                                           Name = p.Name,
                                           ParentCadastralNumbers = p.ParentCadastralNumbers,
                                           Area = p.Area,
@@ -258,7 +258,7 @@ namespace ReaderXml
                                             CadastralNumber = b.CadastralNumber,
                                             CadastralNumberKPT = cadastralNumberKPT,
                                             isCoordinates = b.isCoordinates,
-                                            EntSys = b.EntSys,
+                                            EntSys = b.CoorSys,
                                             Area = b.Area,
                                             ObjectType = b.ObjectType,
                                             Address = b.Address,
@@ -291,7 +291,7 @@ namespace ReaderXml
                                                 CadastralNumber = c.CadastralNumber,
                                                 CadastralNumberKPT = cadastralNumberKPT,
                                                 isCoordinates = c.isCoordinates,
-                                                EntSys = c.EntSys,
+                                                EntSys = c.CoorSys,
                                                 KeyParameters = c.KeyParameters,
                                                 ObjectType = c.ObjectType,
                                                 Address = c.Address,
@@ -323,7 +323,7 @@ namespace ReaderXml
                                                CadastralNumber = u.CadastralNumber,
                                                CadastralNumberKPT = cadastralNumberKPT,
                                                isCoordinates = u.isCoordinates,
-                                               EntSys = u.EntSys,
+                                               EntSys = u.CoorSys,
                                                KeyParameters = u.KeyParameters,
                                                ObjectType = u.ObjectType,
                                                Address = u.Address,
@@ -357,7 +357,7 @@ namespace ReaderXml
                                          TypeBoundary = b.TypeBoundary,
                                          Description = b.Description,
                                          isCoordinates = b.isCoordinates,
-                                         EntSys = b.EntSys,
+                                         EntSys = b.CoorSys,
                                          AdditionalInformation = b.AdditionalInformation
                                      };
                     wsBounds.Cell(numberBound, 1).Value = boundsExel.AsEnumerable();
@@ -388,7 +388,7 @@ namespace ReaderXml
                                         TypeZone = z.TypeZone,
                                         Description = z.Description,
                                         isCoordinates = z.isCoordinates,
-                                        EntSys = z.EntSys,
+                                        EntSys = z.CoorSys,
                                         AdditionalInformation = z.AdditionalInformation
                                     };
                     wsZones.Cell(numberZone, 1).Value = zonesExel.AsEnumerable();

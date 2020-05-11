@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReaderXml.KPT;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,41 +8,45 @@ using System.Xml;
 
 namespace ReaderXml.ECPT
 {
+    /// <summary>
+    /// Зона.
+    /// </summary>
     public class Zone : ICadastralObject
     {
+        #region Свойства
         /// <summary>
-        /// Учетный номер
+        /// Учетный номер.
         /// </summary>
         public string RegNumbBorder { get; set; }
 
         /// <summary>
-        /// Вид зоны
+        /// Вид зоны.
         /// </summary>
         public string TypeBoundary { get; set; }
 
         /// <summary>
-        /// Наименование
+        /// Наименование.
         /// </summary>
         public string TypeZone { get; set; }
 
         /// <summary>
-        /// Дата постановки на учет
+        /// Дата постановки на учет.
         /// </summary>
         public string RegistrationDate { get; set; }
 
         /// <summary>
-        /// Дополнительная информация
+        /// Дополнительная информация.
         /// </summary>
         public string AdditionalInformation { get; set; }
 
         /// <summary>
-        /// Координаты
+        /// Координаты.
         /// </summary>
         public bool isCoordinates { get; set; }
+        public string CoorSys { get; set; }
+        #endregion
 
-        public string SkId { get; set; }
-
-        public void Init(XmlReader reader)
+        public void Init(XmlReader reader, XsdClassifiers dictionary = null)
         {
             string NameByDoc = "";
             string TypeZone = "";
@@ -67,14 +72,12 @@ namespace ReaderXml.ECPT
                             break;
                         case "type_boundary":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("value");
                                 TypeBoundary = reader.ReadElementContentAsString();
                             }
                             break;
                         case "type_zone":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("value");
                                 this.TypeZone = reader.ReadElementContentAsString();
                                 TypeZone += $"тип зоны: {this.TypeZone}";
@@ -82,9 +85,8 @@ namespace ReaderXml.ECPT
                             break;                        
                         case "entity_spatial":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("sk_id");
-                                SkId = reader.ReadElementContentAsString();
+                                CoorSys = reader.ReadElementContentAsString();
                             }
                             break;
                         case "ordinate":
@@ -112,7 +114,6 @@ namespace ReaderXml.ECPT
                             break;
                         case "water_object_type":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("value");
                                 WaterObjectType += $"Вид водного объекта: {reader.ReadElementContentAsString()}";
                             }

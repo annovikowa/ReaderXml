@@ -7,55 +7,44 @@ using System.Xml;
 
 namespace ReaderXml.KPT
 {
-    public class Parcel : CadastralObject, ICadastralObject
+    /// <summary>
+    /// Земельный участок.
+    /// </summary>
+    public class Parcel : CadastralObject
     {
         #region Свойства
-
         /// <summary>
-        /// Координаты
-        /// </summary>
-        public bool isCoordinates { get; set; }
-
-        /// <summary>
-        /// Система координат
-        /// </summary>
-        public string EntSys { get; set; }
-
-        /// <summary>
-        /// Наименование участка
+        /// Наименование участка.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Кадастровый номер земельного участка - Единого землепользования
+        /// Кадастровый номер земельного участка - Единого землепользования.
         /// </summary>
         public string ParentCadastralNumbers { get; set; }
 
         /// <summary>
-        /// Категория земель
+        /// Категория земель.
         /// </summary>
         public string Category { get; set; }
 
         /// <summary>
-        /// Вид разрешенного использования
+        /// Вид разрешенного использования.
         /// </summary>
         public string Utilization { get; set; }
 
         /// <summary>
-        /// Адрес
+        /// Адрес.
         /// </summary>
         public string Address { get; set; }
 
         /// <summary>
-        /// Сведения о величине кадастровой стоимости
+        /// Сведения о величине кадастровой стоимости.
         /// </summary>
         public string CadastralCost { get; set; }
         #endregion
-        public Parcel()
-        {
-        }
 
-        public void Init(XmlReader reader, XsdClassifiers dictionary)
+        public override void Init(XmlReader reader, XsdClassifiers dictionary)
         {
             reader.Read();
             #region Присваиваем атрибуты Parcel
@@ -79,7 +68,6 @@ namespace ReaderXml.KPT
                     {
                         case "Area":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("Area");
                                 Area = $"{reader.ReadElementContentAsString()} кв. м.";
                             }
@@ -93,7 +81,7 @@ namespace ReaderXml.KPT
                         case "Location":
                             {
                                 var inner = reader.ReadSubtree();
-                                Address = new Location(inner, dictionary.AddressRegion, dictionary.AddressOut).GetAddress(true);
+                                Address = new Location(inner, dictionary.AddressRegion).GetAddress(true);
                                 inner.Close();
                             }
                             break;
@@ -125,7 +113,6 @@ namespace ReaderXml.KPT
                             break;
                         case "ParentCadastralNumbers":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("CadastralNumber");
                                 ParentCadastralNumbers = reader.ReadElementContentAsString();
                             }
@@ -139,7 +126,7 @@ namespace ReaderXml.KPT
                         case "EntitySpatial":
                             {
                                 reader.MoveToAttribute("EntSys");
-                                EntSys = reader.Value.ToString();
+                                CoorSys = reader.Value.ToString();
                             }
                             break;
                         case "Ordinate":

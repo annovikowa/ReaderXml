@@ -8,49 +8,44 @@ using System.Xml;
 
 namespace ReaderXml.ECPT
 {
-    public class Land : CadastralObject, ICadastralObject
+    /// <summary>
+    /// Земельный участок.
+    /// </summary>
+    public class Land : CadastralObject
     {
         #region Свойства
         /// <summary>
-        /// Координаты
-        /// </summary>
-        public bool isCoordinates { get; set; }
-
-        public string SkId { get; set; }
-
-        /// <summary>
-        /// Наименование участка
+        /// Наименование участка.
         /// </summary>
         public string Subtype { get; set; }
 
         /// <summary>
-        /// Кадастровый номер земельного участка - Единого землепользования
+        /// Кадастровый номер земельного участка - Единого землепользования.
         /// </summary>
         public string CommonLandCadNumber { get; set; }
 
         /// <summary>
-        /// Категория земель
+        /// Категория земель.
         /// </summary>
         public string Category { get; set; }
 
         /// <summary>
-        /// Вид разрешенного использования
+        /// Вид разрешенного использования.
         /// </summary>
         public string PermittedUse { get; set; }
 
         /// <summary>
-        /// Адрес
+        /// Адрес.
         /// </summary>
         public string Address { get; set; }
 
         /// <summary>
-        /// Сведения о величине кадастровой стоимости
+        /// Сведения о величине кадастровой стоимости.
         /// </summary>
         public string CadastralCost { get; set; }
-
-
         #endregion
-        public void Init(XmlReader reader)
+        
+        public override void Init(XmlReader reader, XsdClassifiers dictionary = null)
         {
             reader.Read();
             while (reader.Read())
@@ -61,33 +56,29 @@ namespace ReaderXml.ECPT
                     {
                         case "common_data":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("cad_number");
                                 CadastralNumber = reader.ReadElementContentAsString();
                             }
                             break;
                         case "area":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("value");
                                 Area = $"{reader.ReadElementContentAsString()} кв. м.";
                             }
                             break;
                         case "subtype":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("value");
                                 Subtype = reader.ReadElementContentAsString();
                             }
                             break;
                         case "address_location":
                             {
-
+                                Address = new Address(reader.ReadSubtree()).GetAddress(true);
                             }
                             break;
                         case "category":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("value");
                                 Category = reader.ReadElementContentAsString();
                             }
@@ -105,23 +96,20 @@ namespace ReaderXml.ECPT
                             break;
                         case "common_land_cad_number":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("cad_number");
                                 CommonLandCadNumber = reader.ReadElementContentAsString();
                             }
                             break;
                         case "cost":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("value");
                                 CadastralCost = reader.ReadElementContentAsString();
                             }
                             break;
                         case "entity_spatial":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("sk_id");
-                                SkId = reader.ReadElementContentAsString();
+                                CoorSys = reader.ReadElementContentAsString();
                             }
                             break;
                         case "ordinate":
@@ -134,7 +122,12 @@ namespace ReaderXml.ECPT
             }
         }
 
-        public string FillPermittedUse(XmlReader reader)
+        /// <summary>
+        /// Возвращает вид разрешенного использования.
+        /// </summary>
+        /// <param name="reader">XmlReader узла вида разрешенного использования.</param>
+        /// <returns>Вид разрешенного использования.</returns>
+        private string FillPermittedUse(XmlReader reader)
         {
             string LandUseMer = "";
             string ByDocument = "";
@@ -148,7 +141,6 @@ namespace ReaderXml.ECPT
                     {
                         case "land_use_mer":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("value");
                                 LandUseMer = reader.ReadElementContentAsString();
                             }
@@ -160,7 +152,6 @@ namespace ReaderXml.ECPT
                             break;
                         case "land_use":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("value");
                                 LandUse = reader.ReadElementContentAsString();
                             }
@@ -176,8 +167,8 @@ namespace ReaderXml.ECPT
                 }
             }
             reader.Close();
-            var text = new[] { LandUseMer, ByDocument, LandUse, PermittedUseText }.FirstOrDefault(x => !string.IsNullOrEmpty(x));
-            return string.Join(". ", text);
+            return new[] { LandUseMer, ByDocument, LandUse, PermittedUseText }.FirstOrDefault(x => !string.IsNullOrEmpty(x));
+            
         }
     }
 }

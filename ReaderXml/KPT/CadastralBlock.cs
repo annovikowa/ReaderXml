@@ -9,13 +9,12 @@ using System.Xml.XPath;
 
 namespace ReaderXml.KPT
 {
+    /// <summary>
+    /// Кадастровый квартал.
+    /// </summary>
     public class CadastralBlock : CadastralObject
     {
         #region
-        /// <summary>
-        /// Координаты
-        /// </summary>
-        public bool isCoordinates { get; set; }
 
         /// <summary>
         /// Сведения о земельных участках
@@ -55,9 +54,17 @@ namespace ReaderXml.KPT
         private Dictionary<string, string> CoordSystem { get; set; }
         #endregion
 
-
+        /// <summary>
+        /// Инициализация нового экземпляра класса CadastralBlock.
+        /// </summary>
+        /// <param name="reader">XmlReader узла кадастрового квартала.</param>
+        /// <param name="dictionary">Экзепляр словарей для перевода кодов в значения по схеме.</param>
         public CadastralBlock(XmlReader reader, XsdClassifiers dictionary)
-        {            
+        {
+            Init(reader, dictionary);
+        }
+        public override void Init(XmlReader reader, XsdClassifiers dictionary)
+        {
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element)
@@ -128,6 +135,11 @@ namespace ReaderXml.KPT
             DefiningCoordinateSystem(allObjects);
         }
 
+        /// <summary>
+        /// Заполение словаря системами координат из кадастрового квартала.
+        /// </summary>
+        /// <param name="reader">XmlReader узла систем координат.</param>
+        /// <returns></returns>
         private Dictionary<string, string> FillCoordSystems(XmlReader reader)
         {
             var dictionary = new Dictionary<string, string>();
@@ -151,14 +163,19 @@ namespace ReaderXml.KPT
             reader.Close();
             collection.Add(obj);
         }
+        
+        /// <summary>
+        /// Заполнение свойства "Система координат" у каждого кадастрового объекта.
+        /// </summary>
+        /// <param name="objects">Перечисление кадастровых объектов.</param>
         private void DefiningCoordinateSystem(IEnumerable<ICadastralObject> objects)
         {
             foreach (var p in objects)
             {
-                if (!String.IsNullOrEmpty(p.EntSys))
+                if (!String.IsNullOrEmpty(p.CoorSys))
                 {
-                    if (CoordSystem.TryGetValue(p.EntSys, out var entSys))
-                        p.EntSys = entSys;
+                    if (CoordSystem.TryGetValue(p.CoorSys, out var entSys))
+                        p.CoorSys = entSys;
                 }
             }
         }

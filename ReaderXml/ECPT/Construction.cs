@@ -4,54 +4,48 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using ReaderXml.KPT;
 
 namespace ReaderXml.ECPT
 {
-    public class Construction : ICadastralObject
+    /// <summary>
+    /// Сооружение.
+    /// </summary>
+    public class Construction : CadastralObject
     {
+        #region Свойства
         /// <summary>
-        /// Кадастровый номер
-        /// </summary>
-        public string CadastralNumber { get; set; }
-
-        /// <summary>
-        /// Координаты
-        /// </summary>
-        public bool isCoordinates { get; set; }
-
-        public string SkId { get; set; }
-
-        /// <summary>
-        /// Кадастровый номер ЕНК
+        /// Кадастровый номер ЕНК.
         /// </summary>
         public string UnitedCadNumbers { get; set; }
 
         /// <summary>
-        /// Основные характеристики сооружения
+        /// Основные характеристики сооружения.
         /// </summary>
         public string BaseParameters { get; set; }
 
         /// <summary>
-        /// Вид объекта недвижимости
+        /// Вид объекта недвижимости.
         /// </summary>
         public string Purpose { get; set; }
 
         /// <summary>
-        /// Вид разрешенного использования
+        /// Вид разрешенного использования.
         /// </summary>
         public string PermittedUse { get; set; }
 
         /// <summary>
-        /// Адрес
+        /// Адрес.
         /// </summary>
         public string Address { get; set; }
 
         /// <summary>
-        /// Кадастровая стоимость
+        /// Кадастровая стоимость.
         /// </summary>
         public string CadastralCost { get; set; }
+        #endregion
 
-        public void Init(XmlReader reader)
+        public override void Init(XmlReader reader, XsdClassifiers dictionary = null)
         {
             reader.Read();
             while (reader.Read())
@@ -62,7 +56,6 @@ namespace ReaderXml.ECPT
                     {
                         case "common_data":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("cad_number");
                                 CadastralNumber = reader.ReadElementContentAsString();
                             }
@@ -74,41 +67,41 @@ namespace ReaderXml.ECPT
                             break;
                         case "base_parameter":
                             {
-                                //ДОДЕЛАТЬ МЕТОД
                                 FillBaseParameters(reader.ReadSubtree());
                             }
                             break;
-                        case "address_location":
+                        case "address":
                             {
-
+                                Address += $"{new Address(reader.ReadSubtree()).GetAddress(false)}; ";
+                            }
+                            break;
+                        case "location":
+                            {
+                                Address += $"{new Address(reader.ReadSubtree()).GetAddress(false)}; ";
                             }
                             break;
                         case "permitted_use":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("name");
                                 PermittedUse = reader.ReadElementContentAsString();                                
                             }
                             break;
                         case "united_cad_number":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("cad_number");
                                 UnitedCadNumbers = reader.ReadElementContentAsString();
                             }
                             break;
                         case "cost":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("value");
                                 CadastralCost = reader.ReadElementContentAsString();
                             }
                             break;
                         case "entity_spatial":
                             {
-                                reader.MoveToContent();
                                 reader.ReadToDescendant("sk_id");
-                                SkId = reader.ReadElementContentAsString();
+                                CoorSys = reader.ReadElementContentAsString();
                             }
                             break;
                         case "ordinate":
@@ -120,10 +113,59 @@ namespace ReaderXml.ECPT
                 }
             }
         }
-    
+
+        /// <summary>
+        /// Считывает основные характеристики сооружения.
+        /// </summary>
+        /// <param name="reader">XmlReader узла основных характеристик.</param>
         private void FillBaseParameters(XmlReader reader)
         {
-
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    switch (reader.LocalName)
+                    {
+                        case "area":
+                            {
+                                BaseParameters += $"Площадь: {reader.ReadElementContentAsString()} кв.м. ";
+                            }
+                            break;
+                        case "built_up_area":
+                            {
+                                BaseParameters += $"Площадь: {reader.ReadElementContentAsString()} кв.м. ";
+                            }
+                            break;
+                        case "extension":
+                            {
+                                BaseParameters += $"Протяженность: {reader.ReadElementContentAsString()} м. ";
+                            }
+                            break;
+                        case "depth":
+                            {
+                                BaseParameters += $"Глубина: {reader.ReadElementContentAsString()} м. ";
+                            }
+                            break;
+                        case "occurence_depth":
+                            {
+                                BaseParameters += $"Глубина залегания: {reader.ReadElementContentAsString()} м. ";
+                            }
+                            break;
+                        case "volume":
+                            {
+                                BaseParameters += $"Объем: {reader.ReadElementContentAsString()} куб.м. ";
+                            }
+                            break;
+                        case "height":
+                            {
+                                BaseParameters += $"Высота: {reader.ReadElementContentAsString()} м. ";
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
             reader.Close();
         }
     }

@@ -8,37 +8,47 @@ using System.Xml;
 
 namespace ReaderXml.ECPT
 {
+    /// <summary>
+    /// Кадастровый план территории.
+    /// </summary>
     public class ExtractCadastralPlanTerritory
     {
-        #region
+        #region Свойства
         /// <summary>
-        /// Название файла
+        /// Название файла.
         /// </summary>
         public string FileName { get; set; }
 
         /// <summary>
-        /// Наименование органа кадастрового учета
+        /// Наименование органа кадастрового учета.
         /// </summary>
         public string OrganRegistrRights { get; set; }
 
         /// <summary>
-        /// Дата
+        /// Дата.
         /// </summary>
         public DateTime DateFormation { get; set; }
 
         /// <summary>
-        /// Номер документа
+        /// Номер документа.
         /// </summary>
         public string RegistrationNumber { get; set; }
 
         /// <summary>
-        /// Должностное лицо
+        /// Должностное лицо.
         /// </summary>
         public string Official { get; set; }
 
+        /// <summary>
+        /// Сведения о кадастровых объектах.
+        /// </summary>
         public List<CadastralBlock> CadastralBlocks { get; set; } = new List<CadastralBlock>();
         #endregion
 
+        /// <summary>
+        /// Инициализация нового экземпляра класса ExtractCadastralPlanTerritory.
+        /// </summary>
+        /// <param name="fileName">URI файла с XML-данными.</param>
         public ExtractCadastralPlanTerritory(string fileName)
         {
             using (var reader = XmlReader.Create(fileName, new XmlReaderSettings() { DtdProcessing = DtdProcessing.Parse }))

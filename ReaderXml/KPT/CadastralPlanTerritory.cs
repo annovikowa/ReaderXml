@@ -9,38 +9,50 @@ using System.Xml.XPath;
 
 namespace ReaderXml.KPT
 {
+    /// <summary>
+    /// Кадастровый план территории.
+    /// </summary>
     public class CadastralPlanTerritory
     {
+        #region Свойства
         /// <summary>
-        /// Название файла
+        /// Название файла.
         /// </summary>
         public string FileName { get; set; }
 
         /// <summary>
-        /// Наименование органа кадастрового учета
+        /// Наименование органа кадастрового учета.
         /// </summary>
         public string Organization { get; set; }
 
         /// <summary>
-        /// Дата
+        /// Дата.
         /// </summary>
         public DateTime Date { get; set; }
 
         /// <summary>
-        /// Номер документа
+        /// Номер документа.
         /// </summary>
         public string Number { get; set; }
 
         /// <summary>
-        /// Должностное лицо
+        /// Должностное лицо.
         /// </summary>
         public string Official { get; set; }
 
+        /// <summary>
+        /// Сведения о кадастровых объектах.
+        /// </summary>
         public List<CadastralBlock> CadastralBlocks { get; set; } = new List<CadastralBlock>();
 
         private List<string> ListDictionary { get; } = new List<string>() { "dRegionsRF_v01", "dParcels_v01", "dCategories_v01", "dAllowedUse_v02",
             "dUtilizations_v01", "dRealty_v03", "dTypeParameter_v01", "dPermitUse_v01", "_AddressOut_v04" };
+        #endregion
 
+        /// <summary>
+        /// Инициализация нового экземпляра класса CadastralPlanTerritory.
+        /// </summary>
+        /// <param name="fileName">URI файла с XML-данными.</param>
         public CadastralPlanTerritory (string fileName)
         {            
             using (var reader = XmlReader.Create(fileName, new XmlReaderSettings() { DtdProcessing = DtdProcessing.Parse }))
@@ -101,6 +113,10 @@ namespace ReaderXml.KPT
             }
         }
 
+        /// <summary>
+        /// Заполнение нового экземпляра XsdClassifiers.
+        /// </summary>
+        /// <returns>Новый экземпляр XsdClassifiers.</returns>
         private XsdClassifiers FillXsdClassifiers()
         {
             XsdClassifiers dictionary = new XsdClassifiers();
@@ -150,13 +166,6 @@ namespace ReaderXml.KPT
                     case "dPermitUse_v01":
                         {
                             dictionary.PermitUse = FillXsdClassifiers(xsd, nsManager);
-                        }
-                        break;
-                    case "_AddressOut_v04":
-                        {
-                            dictionary.AddressOut = xsd.XPathSelectElements(".//xs:element", nsManager)
-                                 .ToDictionary(x => x.XPathEvaluate("string(@name)").ToString(),
-                                 x => x.XPathEvaluate("string(./xs:annotation/xs:documentation)", nsManager).ToString());
                         }
                         break;
                     default:

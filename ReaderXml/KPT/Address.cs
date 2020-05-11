@@ -7,17 +7,31 @@ using System.Xml;
 
 namespace ReaderXml.KPT
 {
+    /// <summary>
+    /// Адрес кадастрового объекта.
+    /// </summary>
     public class Address
     {
-        #region
+        #region Свойства
+        /// <summary>
+        /// Описание адреса.
+        /// </summary>
         public Dictionary<string, string> DictionaryAddress { get; set; } = new Dictionary<string, string>();
 
+        /// <summary>
+        /// Лист адресных элементов.
+        /// </summary>
         public List<string> SequenceAddress { get; } = new List<string>() { "PostalCode", "Region", "District", "City", "UrbanDistrict" +
             "SovietVillage", "Locality", "Street", "Level1", "Level2", "Level3", "Apartment", "Other" };
-        
         #endregion
 
-        public Address(XmlReader reader, Dictionary<string, string> dictionaryRegion, Dictionary<string, string> dictionatyAddress)
+        /// <summary>
+        /// Инициализация нового экземпляра класса Address.
+        /// </summary>
+        /// <param name="reader">XmlReader узла адреса.</param>
+        /// <param name="dictionaryRegion">Словарь содержащий коды регионов.</param>
+        /// <param name="dictionatyAddress">Словарь адресных элементов.</param>
+        public Address(XmlReader reader, Dictionary<string, string> dictionaryRegion)
         {
             while (reader.Read())
             {
@@ -25,8 +39,9 @@ namespace ReaderXml.KPT
                 {
                     switch (reader.LocalName)
                     {
-                        case string node when dictionatyAddress.TryGetValue(node, out var value):
+                        case string node when SequenceAddress.Contains(node):
                             {
+                                string value = "";
                                 if (reader.MoveToAttribute("Type"))
                                 {
                                     value = $"{reader.Value} ";
@@ -57,29 +72,41 @@ namespace ReaderXml.KPT
             }
         }
     }
+
+    /// <summary>
+    /// Уточнение местоположения и адрес (описание местоположения) кадастрового объекта.
+    /// </summary>
     public class Location
     {
+        #region Свойства
         /// <summary>
-        /// В границах
+        /// В границах.
         /// </summary>
         public string inBounds { get; set; }
 
         /// <summary>
-        /// Положение ДКК
+        /// Положение ДКК.
         /// </summary>
         public string Placed { get; set; }
 
         /// <summary>
-        /// Уточнение местоположения
+        /// Уточнение местоположения.
         /// </summary>
         public Elaboration Elaboration { get; set; }
 
         /// <summary>
-        /// Адрес
+        /// Адрес.
         /// </summary>
         public Address Address { get; set; }
+        #endregion
 
-        public Location(XmlReader reader, Dictionary<string, string> dictionaryRegion, Dictionary<string, string> dictionaryAddress)
+        /// <summary>
+        /// Инициализация нового экземпляра класса Location.
+        /// </summary>
+        /// <param name="reader">XmlReader узла адреса.</param>
+        /// <param name="dictionaryRegion">Словарь содержащий коды регионов.</param>
+        /// <param name="dictionaryAddress">Словарь адресных элементов.</param>
+        public Location(XmlReader reader, Dictionary<string, string> dictionaryRegion)
         {
             while (reader.Read())
             {
@@ -107,7 +134,7 @@ namespace ReaderXml.KPT
                         case "Address":
                             {
                                 var inner = reader.ReadSubtree();
-                                Address = new Address(inner, dictionaryRegion, dictionaryAddress);
+                                Address = new Address(inner, dictionaryRegion);
                                 inner.Close();
                             }
                             break;
@@ -119,6 +146,11 @@ namespace ReaderXml.KPT
 
         }
 
+        /// <summary>
+        /// Возвращает местоположение кадастрового объекта.
+        /// </summary>
+        /// <param name="isParcel">Значение "true", если земельный участок; значение "fasle", если другой кадастровый объект.</param>
+        /// <returns>Адрес кадастрового объекта.</returns>
         public string GetAddress(bool isParcel)
         {
             string address;
@@ -142,11 +174,17 @@ namespace ReaderXml.KPT
         private string OutputAddress()
         {
             string address = "";
-            foreach (var s in Address.SequenceAddress)
+            Address.DictionaryAddress.TryGetValue("Note", out var note);
+            if (String.IsNullOrEmpty(note))
             {
-                if (Address.DictionaryAddress.TryGetValue(s, out var a))
-                    address += $"{a}, ";
+                foreach (var s in Address.SequenceAddress)
+                {
+                    if (Address.DictionaryAddress.TryGetValue(s, out var a))
+                        address += $"{a}, ";
+                }
             }
+            else
+                address = note;
             return address;
         }
         private string OutputAddress(bool inBounds)
@@ -171,23 +209,31 @@ namespace ReaderXml.KPT
             }
         }
     }
+
+    /// <summary>
+    /// Уточнение местоположения.
+    /// </summary>
     public class Elaboration
     {
         /// <summary>
-        /// Наименование ориентира
+        /// Наименование ориентира.
         /// </summary>
         public string ReferenceMark { get; set; }
 
         /// <summary>
-        /// Расстояние
+        /// Расстояние.
         /// </summary>
         public string Distance { get; set; }
 
         /// <summary>
-        /// Направление
+        /// Направление.
         /// </summary>
         public string Direction { get; set; }
 
+        /// <summary>
+        /// Инициализация нового экземпляра класса Location.
+        /// </summary>
+        /// <param name="reader">XmlReader узла уточнения местоположения.</param>
         public Elaboration(XmlReader reader)
         {
             while (reader.Read())

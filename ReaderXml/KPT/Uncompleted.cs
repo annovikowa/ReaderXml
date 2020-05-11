@@ -7,48 +7,43 @@ using System.Xml;
 
 namespace ReaderXml.KPT
 {
+    /// <summary>
+    /// Объект незавершенного строительства (ОНС).
+    /// </summary>
     public class Uncompleted : ICadastralObject
     {
-        #region
+        #region Свойства
         /// <summary>
-        /// Кадастровый номер
+        /// Кадастровый номер.
         /// </summary>
         public string CadastralNumber { get; set; }
 
         /// <summary>
-        /// Координаты
+        /// Координаты.
         /// </summary>
         public bool isCoordinates { get; set; }
 
         /// <summary>
-        /// Система координат
-        /// </summary>
-        public string EntSys { get; set; }
-
-        /// <summary>
-        /// Основные характеристики ОНС
+        /// Основные характеристики ОНС.
         /// </summary>
         public string KeyParameters { get; set; }
 
         /// <summary>
-        /// Вид объекта недвижимости
+        /// Вид объекта недвижимости.
         /// </summary>
         public string ObjectType { get; set; }
 
         /// <summary>
-        /// Адрес
+        /// Адрес.
         /// </summary>
         public string Address { get; set; }
 
         /// <summary>
-        /// Кадастровая стоимость
+        /// Кадастровая стоимость.
         /// </summary>
         public string CadastralCost { get; set; }
+        public string CoorSys { get; set; }
         #endregion
-
-        public Uncompleted()
-        {
-        }
 
         public void Init(XmlReader reader, XsdClassifiers dictionary)
         {
@@ -81,7 +76,7 @@ namespace ReaderXml.KPT
                         case "Address":
                             {
                                 var inner = reader.ReadSubtree();
-                                Address = new Location(inner, dictionary.AddressRegion, dictionary.AddressOut).GetAddress(false);
+                                Address = new Location(inner, dictionary.AddressRegion).GetAddress(false);
                                 inner.Close();
                             }
                             break;
@@ -94,7 +89,7 @@ namespace ReaderXml.KPT
                         case "EntitySpatial":
                             {
                                 reader.MoveToAttribute("EntSys");
-                                EntSys = reader.Value.ToString();
+                                CoorSys = reader.Value.ToString();
                             }
                             break;
                         case "Ordinate":
