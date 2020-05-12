@@ -7,107 +7,73 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
-namespace ReaderXml.KPT
+namespace ReaderXml.KPTv10
 {
     /// <summary>
     /// Кадастровый план территории.
     /// </summary>
-    public class CadastralPlanTerritory
+    public class KPT : Abstract.CadastralPlanTerritory
     {
-        #region Свойства
-        /// <summary>
-        /// Название файла.
-        /// </summary>
-        public string FileName { get; set; }
-
-        /// <summary>
-        /// Наименование органа кадастрового учета.
-        /// </summary>
-        public string Organization { get; set; }
-
-        /// <summary>
-        /// Дата.
-        /// </summary>
-        public DateTime Date { get; set; }
-
-        /// <summary>
-        /// Номер документа.
-        /// </summary>
-        public string Number { get; set; }
-
-        /// <summary>
-        /// Должностное лицо.
-        /// </summary>
-        public string Official { get; set; }
-
-        /// <summary>
-        /// Сведения о кадастровых объектах.
-        /// </summary>
-        public List<CadastralBlock> CadastralBlocks { get; set; } = new List<CadastralBlock>();
-
         private List<string> ListDictionary { get; } = new List<string>() { "dRegionsRF_v01", "dParcels_v01", "dCategories_v01", "dAllowedUse_v02",
             "dUtilizations_v01", "dRealty_v03", "dTypeParameter_v01", "dPermitUse_v01", "_AddressOut_v04" };
-        #endregion
 
         /// <summary>
         /// Инициализация нового экземпляра класса CadastralPlanTerritory.
         /// </summary>
         /// <param name="fileName">URI файла с XML-данными.</param>
-        public CadastralPlanTerritory (string fileName)
-        {            
-            using (var reader = XmlReader.Create(fileName, new XmlReaderSettings() { DtdProcessing = DtdProcessing.Parse }))
+        public KPT(string fileName, XmlReader reader)
+        {
+            FileName = fileName;
+            while (reader.Read())
             {
-                while (reader.Read())
+                if (reader.NodeType == XmlNodeType.Element)
                 {
-                    if (reader.NodeType == XmlNodeType.Element)
+                    switch (reader.LocalName)
                     {
-                        switch (reader.LocalName)
-                        {
-                            case "CadastralBlock":
-                                {
-                                    var inner = reader.ReadSubtree();
-                                    CadastralBlocks.Add(new CadastralBlock(inner, FillXsdClassifiers()));
-                                    inner.Close();
-                                }
-                                break;
-                            case "Organization":
-                                {
-                                    Organization = reader.ReadElementContentAsString();
-                                }
-                                break;
-                            case "Date":
-                                {
-                                    Date = reader.ReadElementContentAsDateTime();
-                                }
-                                break;
-                            case "Number":
-                                {
-                                    Number = reader.ReadElementContentAsString();
-                                }
-                                break;
-                            case "Appointment":
-                                {
-                                    Official += $"{reader.ReadElementContentAsString()}, ";
-                                }
-                                break;
-                            case "FamilyName":
-                                {
-                                    Official += $"{reader.ReadElementContentAsString()} ";
-                                }
-                                break;
-                            case "FirstName":
-                                {
-                                    Official += $"{reader.ReadElementContentAsString()} ";
-                                }
-                                break;
-                            case "Patronymic":
-                                {
-                                    Official += $"{reader.ReadElementContentAsString()}";
-                                }
-                                break;
-                            default:
-                                break;
-                        }
+                        case "CadastralBlock":
+                            {
+                                var inner = reader.ReadSubtree();
+                                CadastralBlocks.Add(new CadastralBlock(inner, FillXsdClassifiers()));
+                                inner.Close();
+                            }
+                            break;
+                        case "Organization":
+                            {
+                                OrganRegistrRights = reader.ReadElementContentAsString();
+                            }
+                            break;
+                        case "Date":
+                            {
+                                DateFormation = reader.ReadElementContentAsDateTime();
+                            }
+                            break;
+                        case "Number":
+                            {
+                                RegistrationNumber = reader.ReadElementContentAsString();
+                            }
+                            break;
+                        case "Appointment":
+                            {
+                                Official += $"{reader.ReadElementContentAsString()}, ";
+                            }
+                            break;
+                        case "FamilyName":
+                            {
+                                Official += $"{reader.ReadElementContentAsString()} ";
+                            }
+                            break;
+                        case "FirstName":
+                            {
+                                Official += $"{reader.ReadElementContentAsString()} ";
+                            }
+                            break;
+                        case "Patronymic":
+                            {
+                                Official += $"{reader.ReadElementContentAsString()}";
+                            }
+                            break;
+                        default:
+                            break;
                     }
                 }
             }

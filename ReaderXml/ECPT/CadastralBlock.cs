@@ -1,4 +1,4 @@
-﻿using ReaderXml.KPT;
+﻿using ReaderXml.KPTv10;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,50 +11,8 @@ namespace ReaderXml.ECPT
     /// <summary>
     /// Кадастровый квартал.
     /// </summary>
-    public class CadastralBlock : CadastralObject
+    public class CadastralBlock : Abstract.CadastralBlock
     {
-        #region Свойства
-        /// <summary>
-        /// Сведения о земельных участках.
-        /// </summary>
-        public List<Land> Lands { get; } = new List<Land>();
-
-        /// <summary>
-        /// Сведения о зданиях.
-        /// </summary>
-        public List<Build> Builds { get; } = new List<Build>();
-
-        /// <summary>
-        /// Сведения о сооружениях.
-        /// </summary>
-        public List<Construction> Constructions { get; } = new List<Construction>();
-
-        /// <summary>
-        /// Сведения об ОНС.
-        /// </summary>
-        public List<ObjectUnderConstruction> ObjectUnderConstructions { get; } = new List<ObjectUnderConstruction>();
-
-        /// <summary>
-        /// Сведения о границах между субъектами РФ, населенных пунктов, муниципальных образований.
-        /// </summary>
-        public List<SubjectBoundary> SubjectBoundarys { get; } = new List<SubjectBoundary>();
-
-        /// <summary>
-        /// Сведения о зонах.
-        /// </summary>
-        public List<Zone> Zones { get; } = new List<Zone>();
-
-        /// <summary>
-        /// Сведения о проектах межевания.
-        /// </summary>
-        public List<SurveyingProject> SurveyingProjects { get; } = new List<SurveyingProject>();
-
-        /// <summary>
-        /// Сведения о пунктах ОМС.
-        /// </summary>
-        public List<OMSPoint> OMSPoints { get; } = new List<OMSPoint>();
-        #endregion
-
         /// <summary>
         /// Инициализация нового экземпляра класса CadastralBlock.
         /// </summary>
@@ -64,13 +22,6 @@ namespace ReaderXml.ECPT
             Init(reader);
         }
 
-        private void AddNew<T>(ICollection<T> collection, XmlReader reader) where T : ICadastralObject, new()
-        {
-            var obj = new T();
-            obj.Init(reader, null);
-            reader.Close();
-            collection.Add(obj);
-        }
         public override void Init(XmlReader reader, XsdClassifiers dictionary = null)
         {
             while (reader.Read())
@@ -92,12 +43,12 @@ namespace ReaderXml.ECPT
                             break;
                         case "land_record":
                             {
-                                AddNew(Lands, reader.ReadSubtree());
+                                AddNew(Parcels, reader.ReadSubtree());
                             }
                             break;
                         case "build_record":
                             {
-                                AddNew(Builds, reader.ReadSubtree());
+                                AddNew(Buildings, reader.ReadSubtree());
                             }
                             break;
                         case "construction_record":
@@ -107,27 +58,15 @@ namespace ReaderXml.ECPT
                             break;
                         case "object_under_construction_record":
                             {
-                                AddNew(ObjectUnderConstructions, reader.ReadSubtree());
+                                AddNew(Uncompleteds, reader.ReadSubtree());
                             }
                             break;
                         case "subject_boundary_record":
-                            {
-                                AddNew(SubjectBoundarys, reader.ReadSubtree());
-                            }
-                            break;
                         case "municipal_boundary_record":
-                            {
-                                AddNew(SubjectBoundarys, reader.ReadSubtree());
-                            }
-                            break;
                         case "inhabited_locality_boundary_record":
-                            {
-                                AddNew(SubjectBoundarys, reader.ReadSubtree());
-                            }
-                            break;
                         case "coastline_record":
                             {
-                                AddNew(SubjectBoundarys, reader.ReadSubtree());
+                                AddNew(Bounds, reader.ReadSubtree());
                             }
                             break;
                         case "zones_and_territories_record":

@@ -57,6 +57,17 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\Bound.cs" />
+    <Compile Include="Abstract\Building.cs" />
+    <Compile Include="Abstract\CadastralBlock.cs" />
+    <Compile Include="Abstract\CadastralPlanTerritory.cs" />
+    <Compile Include="Abstract\Construction.cs" />
+    <Compile Include="Abstract\OMSPoint.cs" />
+    <Compile Include="Abstract\Parcel.cs" />
+    <Compile Include="Abstract\SurveyingProject.cs" />
+    <Compile Include="Abstract\Uncompleted.cs" />
+    <Compile Include="Abstract\Zone.cs" />
+    <Compile Include="CadastralPlanTerritoryFactory.cs" />
     <Compile Include="ECPT\Address.cs" />
     <Compile Include="ECPT\Build.cs" />
     <Compile Include="ECPT\CadastralBlock.cs" />
@@ -70,17 +81,17 @@
     <Compile Include="ECPT\SubjectBoundary.cs" />
     <Compile Include="ECPT\SurveyingProject.cs" />
     <Compile Include="ECPT\Zone.cs" />
-    <Compile Include="KPT\Address.cs" />
-    <Compile Include="KPT\Bound.cs" />
-    <Compile Include="KPT\Building.cs" />
-    <Compile Include="KPT\CadastralBlock.cs" />
-    <Compile Include="KPT\CadastralPlanTerritory.cs" />
-    <Compile Include="KPT\XsdClassifiers.cs" />
-    <Compile Include="KPT\OMSPoint.cs" />
-    <Compile Include="KPT\Construction.cs" />
-    <Compile Include="KPT\Parcel.cs" />
-    <Compile Include="KPT\Uncompleted.cs" />
-    <Compile Include="KPT\Zone.cs" />
+    <Compile Include="KPTv10\Address.cs" />
+    <Compile Include="KPTv10\Bound.cs" />
+    <Compile Include="KPTv10\Building.cs" />
+    <Compile Include="KPTv10\CadastralBlock.cs" />
+    <Compile Include="KPTv10\KPT.cs" />
+    <Compile Include="KPTv10\XsdClassifiers.cs" />
+    <Compile Include="KPTv10\OMSPoint.cs" />
+    <Compile Include="KPTv10\Construction.cs" />
+    <Compile Include="KPTv10\Parcel.cs" />
+    <Compile Include="KPTv10\Uncompleted.cs" />
+    <Compile Include="KPTv10\Zone.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

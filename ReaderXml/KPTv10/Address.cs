@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace ReaderXml.KPT
+namespace ReaderXml.KPTv10
 {
     /// <summary>
     /// Адрес кадастрового объекта.

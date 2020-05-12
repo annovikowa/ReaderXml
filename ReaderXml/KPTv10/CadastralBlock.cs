@@ -7,52 +7,14 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
-namespace ReaderXml.KPT
+namespace ReaderXml.KPTv10
 {
     /// <summary>
     /// Кадастровый квартал.
     /// </summary>
-    public class CadastralBlock : CadastralObject
+    public class CadastralBlock : Abstract.CadastralBlock
     {
-        #region
-
-        /// <summary>
-        /// Сведения о земельных участках
-        /// </summary>
-        public List<Parcel> Parcels { get; } = new List<Parcel>();
-
-        /// <summary>
-        /// Здания
-        /// </summary>
-        public List<Building> Buildings { get; } = new List<Building>();
-
-        /// <summary>
-        /// Сооружение
-        /// </summary>
-        public List<Construction> Constructions { get; } = new List<Construction>();
-
-        /// <summary>
-        /// ОНС
-        /// </summary>
-        public List<Uncompleted> Uncompleteds { get; } = new List<Uncompleted>();
-
-        /// <summary>
-        /// Границы между субъектами РФ, границы населенных пунктов, муниципальных образований, расположенных в кадастровом квартале
-        /// </summary>
-        public List<Bound> Bounds { get; } = new List<Bound>();
-
-        /// <summary>
-        /// Зоны
-        /// </summary>
-        public List<Zone> Zones { get; } = new List<Zone>();
-
-        /// <summary>
-        /// Сведения о пунктах ОМС
-        /// </summary>
-        public List<OMSPoint> OMSPoints { get; } = new List<OMSPoint>();        
-
-        private Dictionary<string, string> CoordSystem { get; set; }
-        #endregion
+        private Dictionary<string, string> _сoordSystems;
 
         /// <summary>
         /// Инициализация нового экземпляра класса CadastralBlock.
@@ -63,6 +25,7 @@ namespace ReaderXml.KPT
         {
             Init(reader, dictionary);
         }
+
         public override void Init(XmlReader reader, XsdClassifiers dictionary)
         {
             while (reader.Read())
@@ -119,7 +82,7 @@ namespace ReaderXml.KPT
                             break;
                         case "CoordSystems":
                             {
-                                this.CoordSystem = FillCoordSystems(reader.ReadSubtree());
+                                this._сoordSystems = FillCoordSystems(reader.ReadSubtree());
                             }
                             break;
                         case "Ordinate":
@@ -156,13 +119,7 @@ namespace ReaderXml.KPT
             }
             return dictionary;
         }
-        private void AddNew<T>(ICollection<T> collection, XmlReader reader, XsdClassifiers dictionary) where T : ICadastralObject, new()
-        {
-            var obj = new T();
-            obj.Init(reader, dictionary);
-            reader.Close();
-            collection.Add(obj);
-        }
+
         
         /// <summary>
         /// Заполнение свойства "Система координат" у каждого кадастрового объекта.
@@ -174,7 +131,7 @@ namespace ReaderXml.KPT
             {
                 if (!String.IsNullOrEmpty(p.CoorSys))
                 {
-                    if (CoordSystem.TryGetValue(p.CoorSys, out var entSys))
+                    if (_сoordSystems.TryGetValue(p.CoorSys, out var entSys))
                         p.CoorSys = entSys;
                 }
             }
