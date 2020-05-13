@@ -1,21 +1,26 @@
-﻿using ReaderXml.KPT;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using ReaderXml.KPT;
 
 namespace ReaderXml.ECPT
 {
     /// <summary>
-    /// Объект незавершенного строительства (ОНС).
+    /// Сооружение.
     /// </summary>
-    public class ObjectUnderConstruction : CadastralObject
+    public class Construction : CadastralObject
     {
         #region Свойства
         /// <summary>
-        /// Основные характеристики ОНС.
+        /// Кадастровый номер ЕНК.
+        /// </summary>
+        public string UnitedCadNumbers { get; set; }
+
+        /// <summary>
+        /// Основные характеристики сооружения.
         /// </summary>
         public string BaseParameters { get; set; }
 
@@ -23,6 +28,11 @@ namespace ReaderXml.ECPT
         /// Вид объекта недвижимости.
         /// </summary>
         public string Purpose { get; set; }
+
+        /// <summary>
+        /// Вид разрешенного использования.
+        /// </summary>
+        public string PermittedUse { get; set; }
 
         /// <summary>
         /// Адрес.
@@ -55,9 +65,31 @@ namespace ReaderXml.ECPT
                                 Purpose = reader.ReadElementContentAsString();
                             }
                             break;
-                        case "address_location":
+                        case "base_parameter":
                             {
-                                Address += new Address(reader.ReadSubtree()).GetAddress(false);
+                                FillBaseParameters(reader.ReadSubtree());
+                            }
+                            break;
+                        case "address":
+                            {
+                                Address += $"{new Address(reader.ReadSubtree()).GetAddress(false)}; ";
+                            }
+                            break;
+                        case "location":
+                            {
+                                Address += $"{new Address(reader.ReadSubtree()).GetAddress(false)}; ";
+                            }
+                            break;
+                        case "permitted_use":
+                            {
+                                reader.ReadToDescendant("name");
+                                PermittedUse = reader.ReadElementContentAsString();                                
+                            }
+                            break;
+                        case "united_cad_number":
+                            {
+                                reader.ReadToDescendant("cad_number");
+                                UnitedCadNumbers = reader.ReadElementContentAsString();
                             }
                             break;
                         case "cost":
@@ -73,12 +105,7 @@ namespace ReaderXml.ECPT
                             }
                             break;
                         case "ordinate":
-                            isCoordinates = true;
-                            break;
-                        case "base_parameter":
-                            {
-                                FillBaseParameters(reader.ReadSubtree());
-                            }
+                            HasCoordinates = true;
                             break;
                         default:
                             break;
@@ -101,37 +128,37 @@ namespace ReaderXml.ECPT
                     {
                         case "area":
                             {
-                                BaseParameters += $"Площадь: {reader.ReadElementContentAsString()} кв.м.";
+                                BaseParameters += $"Площадь: {reader.ReadElementContentAsString()} кв.м. ";
                             }
                             break;
                         case "built_up_area":
                             {
-                                BaseParameters += $"Площадь: {reader.ReadElementContentAsString()} кв.м.";
+                                BaseParameters += $"Площадь: {reader.ReadElementContentAsString()} кв.м. ";
                             }
                             break;
                         case "extension":
                             {
-                                BaseParameters += $"Протяженность: {reader.ReadElementContentAsString()} м.";
+                                BaseParameters += $"Протяженность: {reader.ReadElementContentAsString()} м. ";
                             }
                             break;
                         case "depth":
                             {
-                                BaseParameters += $"Глубина: {reader.ReadElementContentAsString()} м.";
+                                BaseParameters += $"Глубина: {reader.ReadElementContentAsString()} м. ";
                             }
                             break;
                         case "occurence_depth":
                             {
-                                BaseParameters += $"Глубина залегания: {reader.ReadElementContentAsString()} м.";
+                                BaseParameters += $"Глубина залегания: {reader.ReadElementContentAsString()} м. ";
                             }
                             break;
                         case "volume":
                             {
-                                BaseParameters += $"Объем: {reader.ReadElementContentAsString()} куб.м.";
+                                BaseParameters += $"Объем: {reader.ReadElementContentAsString()} куб.м. ";
                             }
                             break;
                         case "height":
                             {
-                                BaseParameters += $"Высота: {reader.ReadElementContentAsString()} м.";
+                                BaseParameters += $"Высота: {reader.ReadElementContentAsString()} м. ";
                             }
                             break;
                         default:

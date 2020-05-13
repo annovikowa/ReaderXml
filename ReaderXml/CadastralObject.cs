@@ -8,24 +8,15 @@ using System.Xml;
 
 namespace ReaderXml
 {
-    public abstract class CadastralObject : ICadastralObject
+    public abstract class CadastralObject
     {
-        /// <summary>
-        /// Кадастровый номер замельного участка.
-        /// </summary>
-        public string CadastralNumber { get; set; }
-
-        /// <summary>
-        /// Площадь земельного участка.
-        /// </summary>
-        public string Area { get; set; }
-
         /// <summary>
         /// Наличие координат.
         /// </summary>
-        public bool isCoordinates { get; set; }
+        public bool HasCoordinates { get; set; }
+        /// <summary>
+        /// Система координат.
+        /// </summary>
         public string CoorSys { get; set; }
-
-        public abstract void Init(XmlReader reader, XsdClassifiers dictionary);
     }
 }

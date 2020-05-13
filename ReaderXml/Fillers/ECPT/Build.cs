@@ -101,7 +101,7 @@ namespace ReaderXml.ECPT
                             }
                             break;
                         case "ordinate":
-                            isCoordinates = true;
+                            HasCoordinates = true;
                             break;
                         default:
                             break;

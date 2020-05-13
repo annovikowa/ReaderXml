@@ -8,18 +8,13 @@ using System.Xml;
 namespace ReaderXml.KPT
 {
     /// <summary>
-    /// Сооружение.
+    /// Здание.
     /// </summary>
-    public class Construction : CadastralObject
+    public class Building : CadastralObject
     {
         #region Свойства
         /// <summary>
-        /// Основные характеристики сооружения.
-        /// </summary>
-        public string KeyParameters { get; set; }
-
-        /// <summary>
-        /// Вид объекта недвижимости.
+        /// Назначение здания.
         /// </summary>
         public string ObjectType { get; set; }
 
@@ -37,7 +32,7 @@ namespace ReaderXml.KPT
         public override void Init(XmlReader reader, XsdClassifiers dictionary)
         {
             reader.Read();
-            #region Присваиваем атрибуты Construction
+            #region Присваиваем атрибуты Building
             while (reader.MoveToNextAttribute())
             {
                 switch (reader.Name)
@@ -56,6 +51,11 @@ namespace ReaderXml.KPT
                 {
                     switch (reader.LocalName)
                     {
+                        case "Area":
+                            {
+                                Area = $"{reader.ReadElementContentAsString()} кв.м.";
+                            }
+                            break;
                         case "ObjectType":
                             {
                                 if (dictionary.ObjectType.TryGetValue(reader.ReadElementContentAsString(), out var objectType))
@@ -82,31 +82,7 @@ namespace ReaderXml.KPT
                             }
                             break;
                         case "Ordinate":
-                            isCoordinates = true;
-                            break;
-                        case "KeyParameter":
-                            {
-                                reader.MoveToAttribute("Type");
-                                if (dictionary.KeyParameters.TryGetValue(reader.Value, out var keyParamenter))
-                                {
-
-                                    if (reader.Value == "05" || reader.Value == "06")
-                                    {
-                                        reader.MoveToAttribute("Value");
-                                        KeyParameters = $"{keyParamenter}: {reader.Value} кв.м.";
-                                    }
-                                    else if (reader.Value == "03")
-                                    {
-                                        reader.MoveToAttribute("Value");
-                                        KeyParameters = $"{keyParamenter}: {reader.Value} куб.м.";
-                                    }
-                                    else
-                                    {
-                                        reader.MoveToAttribute("Value");
-                                        KeyParameters = $"{keyParamenter}: {reader.Value} м.";
-                                    }
-                                }
-                            }
+                            HasCoordinates = true;
                             break;
                         default:
                             break;

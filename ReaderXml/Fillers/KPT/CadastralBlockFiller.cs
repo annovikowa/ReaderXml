@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ReaderXml.Fillers;
+using ReaderXml.Fillers.KPT;
+using ReaderXml.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,58 +15,11 @@ namespace ReaderXml.KPT
     /// <summary>
     /// Кадастровый квартал.
     /// </summary>
-    public class CadastralBlock : CadastralObject
+    public class CadastralBlockFiller : IFiller<CadastralBlock>
     {
-        #region
+        private Dictionary<string, string> _coordSystem = new Dictionary<string, string>();
 
-        /// <summary>
-        /// Сведения о земельных участках
-        /// </summary>
-        public List<Parcel> Parcels { get; } = new List<Parcel>();
-
-        /// <summary>
-        /// Здания
-        /// </summary>
-        public List<Building> Buildings { get; } = new List<Building>();
-
-        /// <summary>
-        /// Сооружение
-        /// </summary>
-        public List<Construction> Constructions { get; } = new List<Construction>();
-
-        /// <summary>
-        /// ОНС
-        /// </summary>
-        public List<Uncompleted> Uncompleteds { get; } = new List<Uncompleted>();
-
-        /// <summary>
-        /// Границы между субъектами РФ, границы населенных пунктов, муниципальных образований, расположенных в кадастровом квартале
-        /// </summary>
-        public List<Bound> Bounds { get; } = new List<Bound>();
-
-        /// <summary>
-        /// Зоны
-        /// </summary>
-        public List<Zone> Zones { get; } = new List<Zone>();
-
-        /// <summary>
-        /// Сведения о пунктах ОМС
-        /// </summary>
-        public List<OMSPoint> OMSPoints { get; } = new List<OMSPoint>();        
-
-        private Dictionary<string, string> CoordSystem { get; set; }
-        #endregion
-
-        /// <summary>
-        /// Инициализация нового экземпляра класса CadastralBlock.
-        /// </summary>
-        /// <param name="reader">XmlReader узла кадастрового квартала.</param>
-        /// <param name="dictionary">Экзепляр словарей для перевода кодов в значения по схеме.</param>
-        public CadastralBlock(XmlReader reader, XsdClassifiers dictionary)
-        {
-            Init(reader, dictionary);
-        }
-        public override void Init(XmlReader reader, XsdClassifiers dictionary)
+        public void Fill(CadastralBlock model, XmlReader reader)
         {
             while (reader.Read())
             {
@@ -73,65 +29,65 @@ namespace ReaderXml.KPT
                     {
                         case "Total":
                             {
-                                Area = $"{reader.ReadElementContentAsString()} Га";
+                                model.Area = $"{reader.ReadElementContentAsString()} Га";
                             }
                             break;
                         case "CadastralBlock":
                             {
                                 reader.MoveToAttribute("CadastralNumber");
-                                CadastralNumber = reader.Value;
+                                model.CadastralNumber = reader.Value;
                             }
                             break;
                         case "Parcel":
                             {
-                                AddNew(Parcels, reader.ReadSubtree(), dictionary);
+                                AddNew(model.Parcels, reader.ReadSubtree());
                             }
                             break;
                         case "Building":
                             {
-                                AddNew(Buildings, reader.ReadSubtree(), dictionary);
+                                AddNew(model.Buildings, reader.ReadSubtree());
                             }
                             break;
                         case "Construction":
                             {
-                                AddNew(Constructions, reader.ReadSubtree(), dictionary);
+                                AddNew(model.Constructions, reader.ReadSubtree());
                             }
                             break;
                         case "Uncompleted":
                             {
-                                AddNew(Uncompleteds, reader.ReadSubtree(), dictionary);
+                                AddNew(model.Uncompleteds, reader.ReadSubtree());
                             }
                             break;
                         case "Bound":
                             {
-                                AddNew(Bounds, reader.ReadSubtree(), dictionary);
+                                AddNew(model.Bounds, reader.ReadSubtree());
                             }
                             break;
                         case "Zone":
                             {
-                                AddNew(Zones, reader.ReadSubtree(), dictionary);
+                                AddNew(model.Zones, reader.ReadSubtree());
                             }
                             break;
                         case "OMSPoint":
                             {
-                                AddNew(OMSPoints, reader.ReadSubtree(), dictionary);
+                                AddNew(model.OMSPoints, reader.ReadSubtree());
                             }
                             break;
                         case "CoordSystems":
                             {
-                                this.CoordSystem = FillCoordSystems(reader.ReadSubtree());
+                                _coordSystem = FillCoordSystems(reader.ReadSubtree());
                             }
                             break;
                         case "Ordinate":
                             {
-                                isCoordinates = true;
+                                model.HasCoordinates = true;
                             }
                             break;
 
                     }
                 }
             }
-            var allObjects = Parcels.Union<ICadastralObject>(Buildings).Union(Constructions).Union(Uncompleteds).Union(Bounds).Union(Zones);
+            var allObjects = model.Parcels.Union<CadastralObject>(model.Buildings).Union(model.Constructions).Union(model.Uncompleteds).Union(model.Bounds).Union(model.Zones);
             DefiningCoordinateSystem(allObjects);
         }
 
@@ -156,10 +112,15 @@ namespace ReaderXml.KPT
             }
             return dictionary;
         }
-        private void AddNew<T>(ICollection<T> collection, XmlReader reader, XsdClassifiers dictionary) where T : ICadastralObject, new()
+        private void AddNew<T>(ICollection<T> collection, XmlReader reader) where T : CadastralObject, new()
         {
             var obj = new T();
-            obj.Init(reader, dictionary);
+            var filler = KPTFillerFactory.GetFiller(obj);
+            if (filler == null)
+            {
+                return;
+            }
+            filler.Fill(obj, reader);
             reader.Close();
             collection.Add(obj);
         }
@@ -168,13 +129,13 @@ namespace ReaderXml.KPT
         /// Заполнение свойства "Система координат" у каждого кадастрового объекта.
         /// </summary>
         /// <param name="objects">Перечисление кадастровых объектов.</param>
-        private void DefiningCoordinateSystem(IEnumerable<ICadastralObject> objects)
+        private void DefiningCoordinateSystem(IEnumerable<CadastralObject> objects)
         {
             foreach (var p in objects)
             {
-                if (!String.IsNullOrEmpty(p.CoorSys))
+                if (!string.IsNullOrEmpty(p.CoorSys))
                 {
-                    if (CoordSystem.TryGetValue(p.CoorSys, out var entSys))
+                    if (_coordSystem.TryGetValue(p.CoorSys, out var entSys))
                         p.CoorSys = entSys;
                 }
             }

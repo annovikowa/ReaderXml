@@ -20,6 +20,8 @@ namespace ReaderXml
 
             CadastralPlanTerritory KPT = new CadastralPlanTerritory(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\50_48_0000000_2016-06-29_kpt10.xml");
 
+            var reader = new CadastralPlanTerritoryReader();
+            //reader.Read(file);
 
             #region Лист сводная информация
             var wb = new XLWorkbook();
