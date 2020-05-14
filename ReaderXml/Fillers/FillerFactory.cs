@@ -1,4 +1,5 @@
-﻿using ReaderXml.KPT;
+﻿using ReaderXml.ECPT;
+using ReaderXml.KPT;
 using ReaderXml.Models;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,10 @@ namespace ReaderXml.Fillers
                     {
                         return new KPTFiller();
                     }
-                    //TODO extract_cadastral_plan_territory
+                case "extract_cadastral_plan_territory":
+                    {
+                        return new ECPTFiller();
+                    } 
                 default:
                     {
                         return null;

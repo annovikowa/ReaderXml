@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ReaderXml.Fillers;
+using ReaderXml.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,38 +12,11 @@ namespace ReaderXml.KPT
     /// <summary>
     /// Зона.
     /// </summary>
-    public class Zone : ICadastralObject
+    public class ZoneFiller : IFiller<Zone>
     {
-        #region Свойства
-        /// <summary>
-        /// Учетный номер.
-        /// </summary>
-        public string AccountNumber { get; set; }
-
-        /// <summary>
-        /// Вид зоны.
-        /// </summary>
-        public string TypeZone { get; set; }
-
-        /// <summary>
-        /// Наименование.
-        /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
-        /// Дополнительная информация.
-        /// </summary>
-        public string AdditionalInformation { get; set; }
-
-        /// <summary>
-        /// Координаты.
-        /// </summary>
-        public bool isCoordinates { get; set; }
-        public string CoorSys { get; set; }
-        #endregion
-
-        public void Init(XmlReader reader, XsdClassifiers dictionary)
+        public void Fill(Zone model, XmlReader reader)
         {
+            var xsdDictionaries = XsdClassifiers.GetInstance();
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element)
@@ -50,44 +25,44 @@ namespace ReaderXml.KPT
                     {
                         case "AccountNumber":
                             {
-                                AccountNumber = reader.ReadElementContentAsString();
+                                model.AccountNumber = reader.ReadElementContentAsString();
                             }
                             break;
                         case "Description":
                             {
-                                Description = reader.ReadElementContentAsString();
+                                model.Description = reader.ReadElementContentAsString();
                             }
                             break;
                         case "ContentRestrictions":
                             {
-                                AdditionalInformation = reader.ReadElementContentAsString();
+                                model.AdditionalInformation = reader.ReadElementContentAsString();
                             }
                             break;
                         case "TerritorialZone":
                             {
-                                TypeZone = "Территориальная зона";
+                                model.TypeZone = "Территориальная зона";
                             }
                             break;
                         case "SpecialZone":
                             {
-                                TypeZone = "Зона с особыми условиями использования территорий";
+                                model.TypeZone = "Зона с особыми условиями использования территорий";
                             }
                             break;
                         case "PermittedUse":
                             {
-                                var separator = string.IsNullOrWhiteSpace(AdditionalInformation) ? "" : "; ";
-                                AdditionalInformation += separator + ExtractingAdditionalInformation(reader.ReadSubtree(), dictionary);
+                                var separator = string.IsNullOrWhiteSpace(model.AdditionalInformation) ? "" : "; ";
+                                model.AdditionalInformation += separator + ExtractingAdditionalInformation(reader.ReadSubtree(), xsdDictionaries);
 
                             }
                             break;
                         case "EntitySpatial":
                             {
                                 reader.MoveToAttribute("EntSys");
-                                CoorSys = reader.Value.ToString();
+                                model.CoorSys = reader.Value.ToString();
                             }
                             break;
                         case "Ordinate":
-                            isCoordinates = true;
+                            model.HasCoordinates = true;
                             break;
                         default:
                             break;

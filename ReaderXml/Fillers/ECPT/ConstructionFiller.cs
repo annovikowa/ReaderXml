@@ -4,48 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using ReaderXml.Fillers;
 using ReaderXml.KPT;
+using ReaderXml.Models;
 
 namespace ReaderXml.ECPT
 {
     /// <summary>
     /// Сооружение.
     /// </summary>
-    public class Construction : CadastralObject
+    public class ConstructionFiller : IFiller<Construction>
     {
-        #region Свойства
-        /// <summary>
-        /// Кадастровый номер ЕНК.
-        /// </summary>
-        public string UnitedCadNumbers { get; set; }
-
-        /// <summary>
-        /// Основные характеристики сооружения.
-        /// </summary>
-        public string BaseParameters { get; set; }
-
-        /// <summary>
-        /// Вид объекта недвижимости.
-        /// </summary>
-        public string Purpose { get; set; }
-
-        /// <summary>
-        /// Вид разрешенного использования.
-        /// </summary>
-        public string PermittedUse { get; set; }
-
-        /// <summary>
-        /// Адрес.
-        /// </summary>
-        public string Address { get; set; }
-
-        /// <summary>
-        /// Кадастровая стоимость.
-        /// </summary>
-        public string CadastralCost { get; set; }
-        #endregion
-
-        public override void Init(XmlReader reader, XsdClassifiers dictionary = null)
+        public void Fill(Models.Construction model, XmlReader reader)
         {
             reader.Read();
             while (reader.Read())
@@ -57,55 +27,55 @@ namespace ReaderXml.ECPT
                         case "common_data":
                             {
                                 reader.ReadToDescendant("cad_number");
-                                CadastralNumber = reader.ReadElementContentAsString();
+                                model.CadastralNumber = reader.ReadElementContentAsString();
                             }
                             break;
                         case "purpose":
                             {
-                                Purpose = reader.ReadElementContentAsString();
+                                model.ObjectType = reader.ReadElementContentAsString();
                             }
                             break;
                         case "base_parameter":
                             {
-                                FillBaseParameters(reader.ReadSubtree());
+                                FillBaseParameters(reader.ReadSubtree(), model);
                             }
                             break;
                         case "address":
                             {
-                                Address += $"{new Address(reader.ReadSubtree()).GetAddress(false)}; ";
+                                model.Address += $"{new Address(reader.ReadSubtree()).GetAddress(false)}; ";
                             }
                             break;
                         case "location":
                             {
-                                Address += $"{new Address(reader.ReadSubtree()).GetAddress(false)}; ";
+                                model.Address += $"{new Address(reader.ReadSubtree()).GetAddress(false)}; ";
                             }
                             break;
                         case "permitted_use":
                             {
                                 reader.ReadToDescendant("name");
-                                PermittedUse = reader.ReadElementContentAsString();                                
+                                model.PermittedUse = reader.ReadElementContentAsString();
                             }
                             break;
                         case "united_cad_number":
                             {
                                 reader.ReadToDescendant("cad_number");
-                                UnitedCadNumbers = reader.ReadElementContentAsString();
+                                model.UnitedCadNumbers = reader.ReadElementContentAsString();
                             }
                             break;
                         case "cost":
                             {
                                 reader.ReadToDescendant("value");
-                                CadastralCost = reader.ReadElementContentAsString();
+                                model.CadastralCost = reader.ReadElementContentAsString();
                             }
                             break;
                         case "entity_spatial":
                             {
                                 reader.ReadToDescendant("sk_id");
-                                CoorSys = reader.ReadElementContentAsString();
+                                model.CoorSys = reader.ReadElementContentAsString();
                             }
                             break;
                         case "ordinate":
-                            HasCoordinates = true;
+                            model.HasCoordinates = true;
                             break;
                         default:
                             break;
@@ -118,7 +88,7 @@ namespace ReaderXml.ECPT
         /// Считывает основные характеристики сооружения.
         /// </summary>
         /// <param name="reader">XmlReader узла основных характеристик.</param>
-        private void FillBaseParameters(XmlReader reader)
+        private void FillBaseParameters(XmlReader reader, Construction model)
         {
             while (reader.Read())
             {
@@ -128,37 +98,37 @@ namespace ReaderXml.ECPT
                     {
                         case "area":
                             {
-                                BaseParameters += $"Площадь: {reader.ReadElementContentAsString()} кв.м. ";
+                                model.KeyParameters += $"Площадь: {reader.ReadElementContentAsString()} кв.м. ";
                             }
                             break;
                         case "built_up_area":
                             {
-                                BaseParameters += $"Площадь: {reader.ReadElementContentAsString()} кв.м. ";
+                                model.KeyParameters += $"Площадь: {reader.ReadElementContentAsString()} кв.м. ";
                             }
                             break;
                         case "extension":
                             {
-                                BaseParameters += $"Протяженность: {reader.ReadElementContentAsString()} м. ";
+                                model.KeyParameters += $"Протяженность: {reader.ReadElementContentAsString()} м. ";
                             }
                             break;
                         case "depth":
                             {
-                                BaseParameters += $"Глубина: {reader.ReadElementContentAsString()} м. ";
+                                model.KeyParameters += $"Глубина: {reader.ReadElementContentAsString()} м. ";
                             }
                             break;
                         case "occurence_depth":
                             {
-                                BaseParameters += $"Глубина залегания: {reader.ReadElementContentAsString()} м. ";
+                                model.KeyParameters += $"Глубина залегания: {reader.ReadElementContentAsString()} м. ";
                             }
                             break;
                         case "volume":
                             {
-                                BaseParameters += $"Объем: {reader.ReadElementContentAsString()} куб.м. ";
+                                model.KeyParameters += $"Объем: {reader.ReadElementContentAsString()} куб.м. ";
                             }
                             break;
                         case "height":
                             {
-                                BaseParameters += $"Высота: {reader.ReadElementContentAsString()} м. ";
+                                model.KeyParameters += $"Высота: {reader.ReadElementContentAsString()} м. ";
                             }
                             break;
                         default:

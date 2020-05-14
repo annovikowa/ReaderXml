@@ -1,27 +1,26 @@
-﻿using ReaderXml.KPT;
-using ReaderXml.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ReaderXml.ECPT;
+using ReaderXml.Models;
 
-namespace ReaderXml.Fillers.KPT
+namespace ReaderXml.Fillers.ECPT
 {
-    public static class KPTFillerFactory
+    public static class ECPTFillerFactory
     {
         public static IFiller<T> GetFiller<T>(T model) where T : CadastralObject
-        {
-            //аналогично добавить остальные филлеры. вообще такой подход не совсем правильный, зато удобный)
+        {            
             switch (model)
             {
                 case Parcel _:
                     {
-                        return (IFiller<T>)new ParcelFiller();
+                        return (IFiller<T>)new LandFiller();
                     }
                 case Building _:
                     {
-                        return (IFiller<T>)new BuildingFiller();
+                        return (IFiller<T>)new BuildFiller();
                     }
                 case Construction _:
                     {
@@ -29,11 +28,11 @@ namespace ReaderXml.Fillers.KPT
                     }
                 case Uncompleted _:
                     {
-                        return (IFiller<T>)new UncompletedFiller();
+                        return (IFiller<T>)new ObjectUnderConstructionFiller();
                     }
                 case Bound _:
                     {
-                        return (IFiller<T>)new BoundFiller();
+                        return (IFiller<T>)new SubjectBoundaryFiller();
                     }
                 case Zone _:
                     {
@@ -42,6 +41,10 @@ namespace ReaderXml.Fillers.KPT
                 case OMSPoint _:
                     {
                         return (IFiller<T>)new OMSPointFiller();
+                    }
+                case SurveyingProject _:
+                    {
+                        return (IFiller<T>)new SurveyingProjectFiller();
                     }
                 default:
                     {

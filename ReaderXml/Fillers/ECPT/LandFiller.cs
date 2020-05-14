@@ -1,4 +1,6 @@
-﻿using ReaderXml.KPT;
+﻿using ReaderXml.Fillers;
+using ReaderXml.KPT;
+using ReaderXml.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,41 +13,9 @@ namespace ReaderXml.ECPT
     /// <summary>
     /// Земельный участок.
     /// </summary>
-    public class Land : CadastralObject
+    public class LandFiller : IFiller<Parcel>
     {
-        #region Свойства
-        /// <summary>
-        /// Наименование участка.
-        /// </summary>
-        public string Subtype { get; set; }
-
-        /// <summary>
-        /// Кадастровый номер земельного участка - Единого землепользования.
-        /// </summary>
-        public string CommonLandCadNumber { get; set; }
-
-        /// <summary>
-        /// Категория земель.
-        /// </summary>
-        public string Category { get; set; }
-
-        /// <summary>
-        /// Вид разрешенного использования.
-        /// </summary>
-        public string PermittedUse { get; set; }
-
-        /// <summary>
-        /// Адрес.
-        /// </summary>
-        public string Address { get; set; }
-
-        /// <summary>
-        /// Сведения о величине кадастровой стоимости.
-        /// </summary>
-        public string CadastralCost { get; set; }
-        #endregion
-        
-        public override void Init(XmlReader reader, XsdClassifiers dictionary = null)
+        public void Fill(Parcel model, XmlReader reader)
         {
             reader.Read();
             while (reader.Read())
@@ -57,63 +27,63 @@ namespace ReaderXml.ECPT
                         case "common_data":
                             {
                                 reader.ReadToDescendant("cad_number");
-                                CadastralNumber = reader.ReadElementContentAsString();
+                                model.CadastralNumber = reader.ReadElementContentAsString();
                             }
                             break;
                         case "area":
                             {
                                 reader.ReadToDescendant("value");
-                                Area = $"{reader.ReadElementContentAsString()} кв. м.";
+                                model.Area = $"{reader.ReadElementContentAsString()} кв. м.";
                             }
                             break;
                         case "subtype":
                             {
                                 reader.ReadToDescendant("value");
-                                Subtype = reader.ReadElementContentAsString();
+                                model.Name = reader.ReadElementContentAsString();
                             }
                             break;
                         case "address_location":
                             {
-                                Address = new Address(reader.ReadSubtree()).GetAddress(true);
+                                model.Address = new Address(reader.ReadSubtree()).GetAddress(true);
                             }
                             break;
                         case "category":
                             {
                                 reader.ReadToDescendant("value");
-                                Category = reader.ReadElementContentAsString();
+                                model.Category = reader.ReadElementContentAsString();
                             }
                             break;
                         case "permitted_use_established":
                             {
-                                PermittedUse = FillPermittedUse(reader.ReadSubtree());
+                                model.Utilization = FillPermittedUse(reader.ReadSubtree());
                             }
                             break;
                         case "permitted_uses_grad_reg":
                             {
-                                if (string.IsNullOrEmpty(PermittedUse))
-                                    PermittedUse = FillPermittedUse(reader.ReadSubtree());
+                                if (string.IsNullOrEmpty(model.Utilization))
+                                    model.Utilization = FillPermittedUse(reader.ReadSubtree());
                             }
                             break;
                         case "common_land_cad_number":
                             {
                                 reader.ReadToDescendant("cad_number");
-                                CommonLandCadNumber = reader.ReadElementContentAsString();
+                                model.ParentCadastralNumbers = reader.ReadElementContentAsString();
                             }
                             break;
                         case "cost":
                             {
                                 reader.ReadToDescendant("value");
-                                CadastralCost = reader.ReadElementContentAsString();
+                                model.CadastralCost = reader.ReadElementContentAsString();
                             }
                             break;
                         case "entity_spatial":
                             {
                                 reader.ReadToDescendant("sk_id");
-                                CoorSys = reader.ReadElementContentAsString();
+                                model.CoorSys = reader.ReadElementContentAsString();
                             }
                             break;
                         case "ordinate":
-                            HasCoordinates = true;
+                            model.HasCoordinates = true;
                             break;
                         default:
                             break;

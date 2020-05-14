@@ -1,4 +1,5 @@
 ﻿using ReaderXml.Fillers;
+using ReaderXml.KPT;
 using ReaderXml.Models;
 using System;
 using System.Collections.Generic;
@@ -6,15 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
 
-namespace ReaderXml.KPT
+namespace ReaderXml.ECPT
 {
     /// <summary>
     /// Кадастровый план территории.
     /// </summary>
-    public class KPTFiller : IFiller<CadastralPlanTerritory>
+    public class ECPTFiller : IFiller<CadastralPlanTerritory>
     {
         public void Fill(CadastralPlanTerritory model, XmlReader reader)
         {
@@ -24,49 +23,39 @@ namespace ReaderXml.KPT
                 {
                     switch (reader.LocalName)
                     {
-                        case "CadastralBlock":
+                        case "cadastral_block":
                             {
                                 var inner = reader.ReadSubtree();
                                 var cadBlock = new CadastralBlock();
-                                var filler = new CadastralBlockFiller(); 
+                                var filler = new CadastralBlockFiller();
                                 filler.Fill(cadBlock, inner);
                                 model.CadastralBlocks.Add(cadBlock);
                                 inner.Close();
                             }
                             break;
-                        case "Organization":
+                        case "organ_registr_rights":
                             {
                                 model.OrganRegistrRights = reader.ReadElementContentAsString();
                             }
                             break;
-                        case "Date":
+                        case "date_formation":
                             {
                                 model.DateFormation = reader.ReadElementContentAsDateTime();
                             }
                             break;
-                        case "Number":
+                        case "registration_number":
                             {
                                 model.RegistrationNumber = reader.ReadElementContentAsString();
                             }
                             break;
-                        case "Appointment":
+                        case "initials_surname":
                             {
                                 model.Official += $"{reader.ReadElementContentAsString()}, ";
                             }
                             break;
-                        case "FamilyName":
+                        case "full_name_position":
                             {
                                 model.Official += $"{reader.ReadElementContentAsString()} ";
-                            }
-                            break;
-                        case "FirstName":
-                            {
-                                model.Official += $"{reader.ReadElementContentAsString()} ";
-                            }
-                            break;
-                        case "Patronymic":
-                            {
-                                model.Official += $"{reader.ReadElementContentAsString()}";
                             }
                             break;
                         default:
@@ -74,6 +63,7 @@ namespace ReaderXml.KPT
                     }
                 }
             }
+
         }
     }
 }

@@ -3,13 +3,28 @@
     public class Zone : CadastralObject
     {
         /// <summary>
-        /// Кадастровый номер.
+        /// Учетный номер.
         /// </summary>
-        public string CadastralNumber { get; set; }
+        public string AccountNumber { get; set; }
 
         /// <summary>
-        /// Площадь.
+        /// Дата постановки на учет.
         /// </summary>
-        public string Area { get; set; }
+        public string RegistrationDate { get; set; }
+
+        /// <summary>
+        /// Вид зоны.
+        /// </summary>
+        public string TypeZone { get; set; }
+
+        /// <summary>
+        /// Наименование.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Дополнительная информация.
+        /// </summary>
+        public string AdditionalInformation { get; set; }
     }
 }

@@ -24,8 +24,8 @@ namespace ReaderXml.KPT
                         break;
                 }
             }
-            var xsdDictionaries = XsdClassifiers.GetInstance();
             #endregion
+            var xsdDictionaries = XsdClassifiers.GetInstance();
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element)

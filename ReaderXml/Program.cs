@@ -16,12 +16,10 @@ namespace ReaderXml
     {
         static void Main(string[] args)
         {
-            ExtractCadastralPlanTerritory ECPT = new ExtractCadastralPlanTerritory(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\extract_cadastral_plan_territory\24_54_0105002_2017-06-01_kpt11.xml");
-
-            CadastralPlanTerritory KPT = new CadastralPlanTerritory(@"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\50_48_0000000_2016-06-29_kpt10.xml");
-
+            string file = @"D:\ReaderXml\ReaderXml\КПТ\Примеры\extract_cadastral_plan_territory\24_54_0105002_2017-06-01_kpt11.xml";
             var reader = new CadastralPlanTerritoryReader();
-            //reader.Read(file);
+            var KPT = reader.Read(file);
+
 
             #region Лист сводная информация
             var wb = new XLWorkbook();
@@ -30,10 +28,10 @@ namespace ReaderXml
             ws.Cell("B1").Value = "Наименование органа регистрации прав";
             ws.Cell("C1").Value = "Номер и дата выдачи КПТ";
             ws.Cell("D1").Value = "ФИО и должность сотрудника, который выдал КПТ"; //Может как в схеме названть "Должностное лицо"?
-            ws.Cell("B2").Value = KPT.Organization;
-            ws.Cell("C2").Value = KPT.Date;
+            ws.Cell("B2").Value = KPT.OrganRegistrRights;
+            ws.Cell("C2").Value = KPT.DateFormation;
             ws.Cell("C2").Style.DateFormat.Format = "yyyy-MM-dd";
-            ws.Cell("C2").Value += ", " + KPT.Number;
+            ws.Cell("C2").Value += ", " + KPT.RegistrationNumber;
             ws.Cell("D2").Value = KPT.Official;
             #endregion
 
@@ -208,7 +206,7 @@ namespace ReaderXml
             {
                 #region Лист кадастровые кварталы
                 wsCadastral.Cell(quarter, "A").Value = kpt.CadastralNumber;
-                wsCadastral.Cell(quarter, "B").Value = kpt.isCoordinates;
+                wsCadastral.Cell(quarter, "B").Value = kpt.HasCoordinates;
                 wsCadastral.Cell(quarter++, "C").Value = kpt.Area;
                 #endregion
 
@@ -223,7 +221,7 @@ namespace ReaderXml
                                       {
                                           CadastralNumber = p.CadastralNumber,
                                           CadastralNumberKPT = cadastralNumberKPT,
-                                          isCoordinates = p.isCoordinates,
+                                          isCoordinates = p.HasCoordinates,
                                           EntSys = p.CoorSys,
                                           Name = p.Name,
                                           ParentCadastralNumbers = p.ParentCadastralNumbers,
@@ -242,7 +240,7 @@ namespace ReaderXml
                             ws.Cell(numberObjKpt, "A").Value = p.CadastralNumber;
                             ws.Cell(numberObjKpt, "A").Hyperlink = new XLHyperlink($"'ЗУ'!A{numberParcels++}");
                             ws.Cell(numberObjKpt, "B").Value = p.Category;
-                            ws.Cell(numberObjKpt++, "C").Value = p.isCoordinates;
+                            ws.Cell(numberObjKpt++, "C").Value = p.HasCoordinates;
                             numParcel++;
                         }
                     } while (numParcel <= kpt.Parcels.Count);
@@ -259,7 +257,7 @@ namespace ReaderXml
                                         {
                                             CadastralNumber = b.CadastralNumber,
                                             CadastralNumberKPT = cadastralNumberKPT,
-                                            isCoordinates = b.isCoordinates,
+                                            isCoordinates = b.HasCoordinates,
                                             EntSys = b.CoorSys,
                                             Area = b.Area,
                                             ObjectType = b.ObjectType,
@@ -275,7 +273,7 @@ namespace ReaderXml
                             ws.Cell(numberObjKpt, "A").Value = b.CadastralNumber;
                             ws.Cell(numberObjKpt, "A").Hyperlink = new XLHyperlink($"'Здания'!A{numberBuilding++}");
                             ws.Cell(numberObjKpt, "B").Value = b.ObjectType;
-                            ws.Cell(numberObjKpt++, "C").Value = b.isCoordinates;
+                            ws.Cell(numberObjKpt++, "C").Value = b.HasCoordinates;
                             numBuilding++;
                         }
                     } while (numBuilding <= kpt.Buildings.Count);
@@ -292,7 +290,7 @@ namespace ReaderXml
                                             {
                                                 CadastralNumber = c.CadastralNumber,
                                                 CadastralNumberKPT = cadastralNumberKPT,
-                                                isCoordinates = c.isCoordinates,
+                                                isCoordinates = c.HasCoordinates,
                                                 EntSys = c.CoorSys,
                                                 KeyParameters = c.KeyParameters,
                                                 ObjectType = c.ObjectType,
@@ -307,7 +305,7 @@ namespace ReaderXml
                             ws.Cell(numberObjKpt, "A").Value = c.CadastralNumber;
                             ws.Cell(numberObjKpt, "A").Hyperlink = new XLHyperlink($"'Сооружения'!A{numberConstruction++}");
                             ws.Cell(numberObjKpt, "B").Value = c.ObjectType;
-                            ws.Cell(numberObjKpt++, "C").Value = c.isCoordinates;
+                            ws.Cell(numberObjKpt++, "C").Value = c.HasCoordinates;
                             numConstruction++;
                         }
                     } while (numConstruction <= kpt.Constructions.Count);
@@ -324,7 +322,7 @@ namespace ReaderXml
                                            {
                                                CadastralNumber = u.CadastralNumber,
                                                CadastralNumberKPT = cadastralNumberKPT,
-                                               isCoordinates = u.isCoordinates,
+                                               isCoordinates = u.HasCoordinates,
                                                EntSys = u.CoorSys,
                                                KeyParameters = u.KeyParameters,
                                                ObjectType = u.ObjectType,
@@ -339,7 +337,7 @@ namespace ReaderXml
                             ws.Cell(numberObjKpt, "A").Value = u.CadastralNumber;
                             ws.Cell(numberObjKpt, "A").Hyperlink = new XLHyperlink($"'ОНС'!A{numberUncompleted++}");
                             ws.Cell(numberObjKpt, "B").Value = u.ObjectType;
-                            ws.Cell(numberObjKpt++, "C").Value = u.isCoordinates;
+                            ws.Cell(numberObjKpt++, "C").Value = u.HasCoordinates;
                             numUncompleted++;
                         }
                     } while (numUncompleted <= kpt.Uncompleteds.Count);
@@ -358,7 +356,7 @@ namespace ReaderXml
                                          CadastralNumberKPT = cadastralNumberKPT,
                                          TypeBoundary = b.TypeBoundary,
                                          Description = b.Description,
-                                         isCoordinates = b.isCoordinates,
+                                         isCoordinates = b.HasCoordinates,
                                          EntSys = b.CoorSys,
                                          AdditionalInformation = b.AdditionalInformation
                                      };
@@ -370,7 +368,7 @@ namespace ReaderXml
                             ws.Cell(numberObjKpt, "A").Value = b.AccountNumber;
                             ws.Cell(numberObjKpt, "A").Hyperlink = new XLHyperlink($"'Границы'!A{numberBound++}");
                             ws.Cell(numberObjKpt, "B").Value = b.TypeBoundary;
-                            ws.Cell(numberObjKpt++, "C").Value = b.isCoordinates;
+                            ws.Cell(numberObjKpt++, "C").Value = b.HasCoordinates;
                             numBound++;
                         }
                     } while (numBound <= kpt.Bounds.Count);
@@ -389,7 +387,7 @@ namespace ReaderXml
                                         CadastralNumberKPT = cadastralNumberKPT,
                                         TypeZone = z.TypeZone,
                                         Description = z.Description,
-                                        isCoordinates = z.isCoordinates,
+                                        isCoordinates = z.HasCoordinates,
                                         EntSys = z.CoorSys,
                                         AdditionalInformation = z.AdditionalInformation
                                     };
@@ -401,7 +399,7 @@ namespace ReaderXml
                             ws.Cell(numberObjKpt, "A").Value = z.AccountNumber;
                             ws.Cell(numberObjKpt, "A").Hyperlink = new XLHyperlink($"'Зоны'!A{numberZone++}");
                             ws.Cell(numberObjKpt, "B").Value = z.TypeZone;
-                            ws.Cell(numberObjKpt++, "C").Value = z.isCoordinates;
+                            ws.Cell(numberObjKpt++, "C").Value = z.HasCoordinates;
                             numZone++;
                         }
                     } while (numZone <= kpt.Zones.Count);

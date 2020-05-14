@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ReaderXml.Fillers;
+using ReaderXml.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,42 +12,9 @@ namespace ReaderXml.KPT
     /// <summary>
     /// Объект незавершенного строительства (ОНС).
     /// </summary>
-    public class Uncompleted : ICadastralObject
+    public class UncompletedFiller : IFiller<Uncompleted>
     {
-        #region Свойства
-        /// <summary>
-        /// Кадастровый номер.
-        /// </summary>
-        public string CadastralNumber { get; set; }
-
-        /// <summary>
-        /// Координаты.
-        /// </summary>
-        public bool isCoordinates { get; set; }
-
-        /// <summary>
-        /// Основные характеристики ОНС.
-        /// </summary>
-        public string KeyParameters { get; set; }
-
-        /// <summary>
-        /// Вид объекта недвижимости.
-        /// </summary>
-        public string ObjectType { get; set; }
-
-        /// <summary>
-        /// Адрес.
-        /// </summary>
-        public string Address { get; set; }
-
-        /// <summary>
-        /// Кадастровая стоимость.
-        /// </summary>
-        public string CadastralCost { get; set; }
-        public string CoorSys { get; set; }
-        #endregion
-
-        public void Init(XmlReader reader, XsdClassifiers dictionary)
+        public void Fill(Uncompleted model, XmlReader reader)
         {
             reader.Read();
             #region Присваиваем атрибуты Construction
@@ -54,13 +23,14 @@ namespace ReaderXml.KPT
                 switch (reader.Name)
                 {
                     case "CadastralNumber":
-                        CadastralNumber = reader.Value;
+                        model.CadastralNumber = reader.Value;
                         break;
                     default:
                         break;
                 }
             }
             #endregion
+            var xsdDictionaries = XsdClassifiers.GetInstance();
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element)
@@ -69,52 +39,52 @@ namespace ReaderXml.KPT
                     {
                         case "ObjectType":
                             {
-                                if (dictionary.ObjectType.TryGetValue(reader.ReadElementContentAsString(), out var objectType))
-                                    ObjectType = objectType;
+                                if (xsdDictionaries.ObjectType.TryGetValue(reader.ReadElementContentAsString(), out var objectType))
+                                    model.ObjectType = objectType;
                             }
                             break;
                         case "Address":
                             {
                                 var inner = reader.ReadSubtree();
-                                Address = new Location(inner, dictionary.AddressRegion).GetAddress(false);
+                                model.Address = new Location(inner, xsdDictionaries.AddressRegion).GetAddress(false);
                                 inner.Close();
                             }
                             break;
                         case "CadastralCost":
                             {
                                 reader.MoveToAttribute("Value");
-                                CadastralCost = $"{reader.Value} руб.";
+                                model.CadastralCost = $"{reader.Value} руб.";
                             }
                             break;
                         case "EntitySpatial":
                             {
                                 reader.MoveToAttribute("EntSys");
-                                CoorSys = reader.Value.ToString();
+                                model.CoorSys = reader.Value.ToString();
                             }
                             break;
                         case "Ordinate":
-                            isCoordinates = true;
+                            model.HasCoordinates = true;
                             break;
                         case "KeyParameter":
                             {
                                 reader.MoveToAttribute("Type");
-                                if (dictionary.KeyParameters.TryGetValue(reader.Value, out var keyParamenter))
+                                if (xsdDictionaries.KeyParameters.TryGetValue(reader.Value, out var keyParamenter))
                                 {
 
                                     if (reader.Value == "05" || reader.Value == "06")
                                     {
                                         reader.MoveToAttribute("Value");
-                                        KeyParameters = $"{keyParamenter}: {reader.Value} кв.м.";
+                                        model.KeyParameters = $"{keyParamenter}: {reader.Value} кв.м.";
                                     }
                                     else if (reader.Value == "03")
                                     {
                                         reader.MoveToAttribute("Value");
-                                        KeyParameters = $"{keyParamenter}: {reader.Value} куб.м.";
+                                        model.KeyParameters = $"{keyParamenter}: {reader.Value} куб.м.";
                                     }
                                     else
                                     {
                                         reader.MoveToAttribute("Value");
-                                        KeyParameters = $"{keyParamenter}: {reader.Value} м.";
+                                        model.KeyParameters = $"{keyParamenter}: {reader.Value} м.";
                                     }
                                 }
                             }

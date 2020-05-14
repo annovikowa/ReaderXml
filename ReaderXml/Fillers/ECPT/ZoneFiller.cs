@@ -1,4 +1,6 @@
-﻿using ReaderXml.KPT;
+﻿using ReaderXml.Fillers;
+using ReaderXml.KPT;
+using ReaderXml.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,42 +13,9 @@ namespace ReaderXml.ECPT
     /// <summary>
     /// Зона.
     /// </summary>
-    public class Zone : ICadastralObject
+    public class ZoneFiller : IFiller<Zone>
     {
-        #region Свойства
-        /// <summary>
-        /// Учетный номер.
-        /// </summary>
-        public string RegNumbBorder { get; set; }
-
-        /// <summary>
-        /// Вид зоны.
-        /// </summary>
-        public string TypeBoundary { get; set; }
-
-        /// <summary>
-        /// Наименование.
-        /// </summary>
-        public string TypeZone { get; set; }
-
-        /// <summary>
-        /// Дата постановки на учет.
-        /// </summary>
-        public string RegistrationDate { get; set; }
-
-        /// <summary>
-        /// Дополнительная информация.
-        /// </summary>
-        public string AdditionalInformation { get; set; }
-
-        /// <summary>
-        /// Координаты.
-        /// </summary>
-        public bool isCoordinates { get; set; }
-        public string CoorSys { get; set; }
-        #endregion
-
-        public void Init(XmlReader reader, XsdClassifiers dictionary = null)
+        public void Fill(Zone model, XmlReader reader)
         {
             string NameByDoc = "";
             string TypeZone = "";
@@ -62,35 +31,35 @@ namespace ReaderXml.ECPT
                     {
                         case "reg_numb_border":
                             {
-                                RegNumbBorder = reader.ReadElementContentAsString();
+                                model.AccountNumber = reader.ReadElementContentAsString();
                             }
                             break;
                         case "registration_date":
                             {
-                                RegistrationDate = reader.ReadElementContentAsString();
+                                model.RegistrationDate = reader.ReadElementContentAsString();
                             }
                             break;
                         case "type_boundary":
                             {
                                 reader.ReadToDescendant("value");
-                                TypeBoundary = reader.ReadElementContentAsString();
+                                model.Description = reader.ReadElementContentAsString();
                             }
                             break;
                         case "type_zone":
                             {
                                 reader.ReadToDescendant("value");
-                                this.TypeZone = reader.ReadElementContentAsString();
-                                TypeZone += $"тип зоны: {this.TypeZone}";
+                                model.TypeZone = reader.ReadElementContentAsString();
+                                TypeZone += $"тип зоны: {model.TypeZone}";
                             }
-                            break;                        
+                            break;
                         case "entity_spatial":
                             {
                                 reader.ReadToDescendant("sk_id");
-                                CoorSys = reader.ReadElementContentAsString();
+                                model.CoorSys = reader.ReadElementContentAsString();
                             }
                             break;
                         case "ordinate":
-                            isCoordinates = true;
+                            model.HasCoordinates = true;
                             break;
                         case "name_by_doc":
                             {
@@ -124,7 +93,7 @@ namespace ReaderXml.ECPT
                 }
             }
             var text = new[] { NameByDoc, TypeZone, Number, Index, WaterObjectName, WaterObjectType }.Where(x => !string.IsNullOrEmpty(x));
-            AdditionalInformation = string.Join(". ", text);
-        }      
+            model.AdditionalInformation = string.Join(". ", text);
+        }     
     }
 }

@@ -1,4 +1,6 @@
-﻿using ReaderXml.KPT;
+﻿using ReaderXml.Fillers;
+using ReaderXml.KPT;
+using ReaderXml.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,26 +13,9 @@ namespace ReaderXml.ECPT
     /// <summary>
     /// Проект межевания.
     /// </summary>
-    public class SurveyingProject : ICadastralObject
+    public class SurveyingProjectFiller : IFiller<SurveyingProject>
     {
-        /// <summary>
-        /// Учетный номер ПМТ.
-        /// </summary>
-        public string SurveyProjectNum { get; set; }
-
-        /// <summary>
-        /// Условный номер ЗУ.
-        /// </summary>
-        public string NominalNumber { get; set; }
-
-        /// <summary>
-        /// Координаты.
-        /// </summary>
-        public bool isCoordinates { get; set; }
-
-        public string CoorSys { get; set; }
-
-        public void Init(XmlReader reader, XsdClassifiers dictionary = null)
+        public void Fill(SurveyingProject model, XmlReader reader)
         {
             while (reader.Read())
             {
@@ -40,22 +25,22 @@ namespace ReaderXml.ECPT
                     {
                         case "survey_project_num":
                             {
-                                SurveyProjectNum = reader.ReadElementContentAsString();
+                                model.SurveyProjectNum = reader.ReadElementContentAsString();
                             }
                             break;
                         case "nominal_number":
                             {
-                                NominalNumber = reader.ReadElementContentAsString();
+                                model.NominalNumber = reader.ReadElementContentAsString();
                             }
                             break;
                         case "entity_spatial":
                             {
                                 reader.ReadToDescendant("sk_id");
-                                CoorSys = reader.ReadElementContentAsString();
+                                model.CoorSys = reader.ReadElementContentAsString();
                             }
                             break;
                         case "ordinate":
-                            isCoordinates = true;
+                            model.HasCoordinates = true;
                             break;
                         default:
                             break;
