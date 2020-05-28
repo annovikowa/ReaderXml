@@ -58,6 +58,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CadastralPlanTerritoryReader.cs" />
+    <Compile Include="ExelSheets\CadastralSheet.cs" />
+    <Compile Include="ExelSheets\ExelFiller.cs" />
+    <Compile Include="ExelSheets\InformationSheet.cs" />
+    <Compile Include="ExelSheets\ISheet.cs" />
     <Compile Include="Fillers\ECPT\Address.cs" />
     <Compile Include="Fillers\ECPT\BuildFiller.cs" />
     <Compile Include="Fillers\ECPT\CadastralBlockFiller.cs" />
@@ -68,7 +72,6 @@
     <Compile Include="Fillers\FillerFactory.cs" />
     <Compile Include="Fillers\IFiller.cs" />
     <Compile Include="Fillers\KPT\KPTFillerFactory.cs" />
-    <Compile Include="ICadastralObject.cs" />
     <Compile Include="Fillers\ECPT\LandFiller.cs" />
     <Compile Include="Fillers\ECPT\ObjectUnderConstructionFiller.cs" />
     <Compile Include="Fillers\ECPT\OMSPointFiller.cs" />

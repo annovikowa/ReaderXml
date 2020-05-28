@@ -8,7 +8,7 @@ using System.Xml.Schema;
 using ClosedXML.Excel;
 using ReaderXml.KPT;
 using ReaderXml.ECPT;
-
+using ReaderXml.ExelSheets;
 
 namespace ReaderXml
 {
@@ -16,31 +16,23 @@ namespace ReaderXml
     {
         static void Main(string[] args)
         {
-            string file = @"D:\ReaderXml\ReaderXml\КПТ\Примеры\extract_cadastral_plan_territory\24_54_0105002_2017-06-01_kpt11.xml";
+            string file = @"D:\ReaderXml\ReaderXml\КПТ\Примеры\extract_cadastral_plan_territory\24_04_0501007_2017-06-01_kpt11.xml";
             var reader = new CadastralPlanTerritoryReader();
             var KPT = reader.Read(file);
 
+            ExelFiller exelFiller = new ExelFiller();
+            exelFiller.XlWorkbook.SaveAs("test.xlsx");
+            System.Diagnostics.Process.Start("test.xlsx");
 
             #region Лист сводная информация
             var wb = new XLWorkbook();
-            var ws = wb.Worksheets.Add("Сводная информация");
-            ws.Cell("A1").Value = "Имя xml-файла";
-            ws.Cell("B1").Value = "Наименование органа регистрации прав";
-            ws.Cell("C1").Value = "Номер и дата выдачи КПТ";
-            ws.Cell("D1").Value = "ФИО и должность сотрудника, который выдал КПТ"; //Может как в схеме названть "Должностное лицо"?
+            var ws = wb.Worksheets.Add("Сводная информация");           
             ws.Cell("B2").Value = KPT.OrganRegistrRights;
             ws.Cell("C2").Value = KPT.DateFormation;
             ws.Cell("C2").Style.DateFormat.Format = "yyyy-MM-dd";
             ws.Cell("C2").Value += ", " + KPT.RegistrationNumber;
             ws.Cell("D2").Value = KPT.Official;
-            #endregion
-
-            #region Лист кадастровые кварталы
-            var wsCadastral = wb.Worksheets.Add("Кадастровые кварталы");
-            wsCadastral.Cell("A1").Value = "Номер кадастрового квартала";
-            wsCadastral.Cell("B1").Value = "Наличие координат";
-            wsCadastral.Cell("C1").Value = "Площадь";
-            #endregion
+            #endregion            
 
             IXLWorksheet wsParcels = null, wsBuildings = null, wsConstructions = null, wsUncompleteds = null, wsBounds = null, wsZones = null, wsOMSPoint = null;
             int numberObjKpt = 3;
