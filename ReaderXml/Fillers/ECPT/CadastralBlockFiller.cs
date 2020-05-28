@@ -16,9 +16,10 @@ namespace ReaderXml.ECPT
     /// </summary>
     public class CadastralBlockFiller : IFiller<CadastralBlock>
     {
-        private void AddNew<T>(ICollection<T> collection, XmlReader reader) where T : CadastralObject, new()
+        private void AddNew<T>(ICollection<T> collection, XmlReader reader, CadastralBlock model) where T : CadastralObjectInBlock, new()
         {
             var obj = new T();
+            obj.SetCadastralBlock(model);
             var filler = ECPTFillerFactory.GetFiller(obj);
             if (filler == null)
             {
@@ -50,57 +51,57 @@ namespace ReaderXml.ECPT
                             break;
                         case "land_record":
                             {
-                                AddNew(model.Parcels, reader.ReadSubtree());
+                                AddNew(model.Parcels, reader.ReadSubtree(), model);
                             }
                             break;
                         case "build_record":
                             {
-                                AddNew(model.Buildings, reader.ReadSubtree());
+                                AddNew(model.Buildings, reader.ReadSubtree(), model);
                             }
                             break;
                         case "construction_record":
                             {
-                                AddNew(model.Constructions, reader.ReadSubtree());
+                                AddNew(model.Constructions, reader.ReadSubtree(), model);
                             }
                             break;
                         case "object_under_construction_record":
                             {
-                                AddNew(model.Uncompleteds, reader.ReadSubtree());
+                                AddNew(model.Uncompleteds, reader.ReadSubtree(), model);
                             }
                             break;
                         case "subject_boundary_record":
                             {
-                                AddNew(model.Bounds, reader.ReadSubtree());
+                                AddNew(model.Bounds, reader.ReadSubtree(), model);
                             }
                             break;
                         case "municipal_boundary_record":
                             {
-                                AddNew(model.Bounds, reader.ReadSubtree());
+                                AddNew(model.Bounds, reader.ReadSubtree(), model);
                             }
                             break;
                         case "inhabited_locality_boundary_record":
                             {
-                                AddNew(model.Bounds, reader.ReadSubtree());
+                                AddNew(model.Bounds, reader.ReadSubtree(), model);
                             }
                             break;
                         case "coastline_record":
                             {
-                                AddNew(model.Bounds, reader.ReadSubtree());
+                                AddNew(model.Bounds, reader.ReadSubtree(), model);
                             }
                             break;
                         case "zones_and_territories_record":
                             {
-                                AddNew(model.Zones, reader.ReadSubtree());
+                                AddNew(model.Zones, reader.ReadSubtree(), model);
                             }
                             break;
                         case "surveying_project_record":
                             {
-                                AddNew(model.SurveyingProjects, reader.ReadSubtree());
+                                AddNew(model.SurveyingProjects, reader.ReadSubtree(), model);
                             }
                             break;
                         case "oms_point":
                             {
-                                AddNew(model.OMSPoints, reader.ReadSubtree());
+                                AddNew(model.OMSPoints, reader.ReadSubtree(), model);
                             }
                             break;
                         case "ordinate":

@@ -1,6 +1,6 @@
 ﻿namespace ReaderXml.Models
 {
-    public class Uncompleted : CadastralObject
+    public class Uncompleted : CadastralObjectInBlock
     {
         /// <summary>
         /// Кадастровый номер.

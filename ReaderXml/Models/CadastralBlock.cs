@@ -6,7 +6,7 @@ namespace ReaderXml.Models
     /// <summary>
     /// Кадастровый квартал.
     /// </summary>
-    public class CadastralBlock : CadastralObject
+    public class CadastralBlock : CadastralObjectInBlock
     {
         /// <summary>
         /// Кадастровый номер.

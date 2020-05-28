@@ -1,6 +1,6 @@
 ﻿namespace ReaderXml.Models
 {
-    public class OMSPoint : CadastralObject
+    public class OMSPoint : CadastralObjectInBlock
     {
         /// <summary>
         /// Номер пункта опорной межевой сети на плане.

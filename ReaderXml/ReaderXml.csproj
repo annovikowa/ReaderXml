@@ -57,6 +57,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CadastralObjectInBlock.cs" />
     <Compile Include="CadastralPlanTerritoryReader.cs" />
     <Compile Include="ExelSheets\CadastralSheet.cs" />
     <Compile Include="ExelSheets\ExelFiller.cs" />

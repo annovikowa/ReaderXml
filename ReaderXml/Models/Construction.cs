@@ -1,6 +1,6 @@
 ﻿namespace ReaderXml.Models
 {
-    public class Construction : CadastralObject
+    public class Construction : CadastralObjectInBlock
     {
         /// <summary>
         /// Кадастровый номер.

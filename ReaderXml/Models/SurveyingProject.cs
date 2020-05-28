@@ -1,6 +1,6 @@
 ﻿namespace ReaderXml.Models
 {
-    public class SurveyingProject : CadastralObject
+    public class SurveyingProject : CadastralObjectInBlock
     {
         /// <summary>
         /// Учетный номер ПМТ.

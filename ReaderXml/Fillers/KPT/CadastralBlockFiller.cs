@@ -40,37 +40,37 @@ namespace ReaderXml.KPT
                             break;
                         case "Parcel":
                             {
-                                AddNew(model.Parcels, reader.ReadSubtree());
+                                AddNew(model.Parcels, reader.ReadSubtree(), model);
                             }
                             break;
                         case "Building":
                             {
-                                AddNew(model.Buildings, reader.ReadSubtree());
+                                AddNew(model.Buildings, reader.ReadSubtree(), model);
                             }
                             break;
                         case "Construction":
                             {
-                                AddNew(model.Constructions, reader.ReadSubtree());
+                                AddNew(model.Constructions, reader.ReadSubtree(), model);
                             }
                             break;
                         case "Uncompleted":
                             {
-                                AddNew(model.Uncompleteds, reader.ReadSubtree());
+                                AddNew(model.Uncompleteds, reader.ReadSubtree(), model);
                             }
                             break;
                         case "Bound":
                             {
-                                AddNew(model.Bounds, reader.ReadSubtree());
+                                AddNew(model.Bounds, reader.ReadSubtree(), model);
                             }
                             break;
                         case "Zone":
                             {
-                                AddNew(model.Zones, reader.ReadSubtree());
+                                AddNew(model.Zones, reader.ReadSubtree(), model);
                             }
                             break;
                         case "OMSPoint":
                             {
-                                AddNew(model.OMSPoints, reader.ReadSubtree());
+                                AddNew(model.OMSPoints, reader.ReadSubtree(), model);
                             }
                             break;
                         case "CoordSystems":
@@ -112,9 +112,10 @@ namespace ReaderXml.KPT
             }
             return dictionary;
         }
-        private void AddNew<T>(ICollection<T> collection, XmlReader reader) where T : CadastralObject, new()
+        private void AddNew<T>(ICollection<T> collection, XmlReader reader, CadastralBlock model) where T : CadastralObjectInBlock, new()
         {
             var obj = new T();
+            obj.SetCadastralBlock(model);
             var filler = KPTFillerFactory.GetFiller(obj);
             if (filler == null)
             {

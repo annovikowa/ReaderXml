@@ -16,7 +16,7 @@ namespace ReaderXml
     {
         static void Main(string[] args)
         {
-            string file = @"D:\ReaderXml\ReaderXml\КПТ\Примеры\extract_cadastral_plan_territory\24_04_0501007_2017-06-01_kpt11.xml";
+            string file = @"D:\ReaderXml\ReaderXml\КПТ\Примеры\extract_cadastral_plan_territory\24_09_0102001_2017-05-31_kpt11.xml";
             var reader = new CadastralPlanTerritoryReader();
             var KPT = reader.Read(file);
 
@@ -197,9 +197,9 @@ namespace ReaderXml
             foreach (var kpt in KPT.CadastralBlocks)
             {
                 #region Лист кадастровые кварталы
-                wsCadastral.Cell(quarter, "A").Value = kpt.CadastralNumber;
-                wsCadastral.Cell(quarter, "B").Value = kpt.HasCoordinates;
-                wsCadastral.Cell(quarter++, "C").Value = kpt.Area;
+               // wsCadastral.Cell(quarter, "A").Value = kpt.CadastralNumber;
+                //wsCadastral.Cell(quarter, "B").Value = kpt.HasCoordinates;
+                //wsCadastral.Cell(quarter++, "C").Value = kpt.Area;
                 #endregion
 
                 #region Перечисление земельных участков  
@@ -208,11 +208,10 @@ namespace ReaderXml
                 {
                     int numParcel = 1;
                     var parcelsExel = from p in kpt.Parcels
-                                      let cadastralNumberKPT = kpt.CadastralNumber
                                       select new
                                       {
                                           CadastralNumber = p.CadastralNumber,
-                                          CadastralNumberKPT = cadastralNumberKPT,
+                                          CadastralNumberKPT = p.CadasstralBlockNumber,
                                           isCoordinates = p.HasCoordinates,
                                           EntSys = p.CoorSys,
                                           Name = p.Name,
@@ -244,11 +243,10 @@ namespace ReaderXml
                 {
                     int numBuilding = 1;
                     var buildingsExel = from b in kpt.Buildings
-                                        let cadastralNumberKPT = kpt.CadastralNumber
                                         select new
                                         {
                                             CadastralNumber = b.CadastralNumber,
-                                            CadastralNumberKPT = cadastralNumberKPT,
+                                            CadastralNumberKPT = b.CadasstralBlockNumber,
                                             isCoordinates = b.HasCoordinates,
                                             EntSys = b.CoorSys,
                                             Area = b.Area,
@@ -277,11 +275,10 @@ namespace ReaderXml
                 {
                     int numConstruction = 1;
                     var constructionsExel = from c in kpt.Constructions
-                                            let cadastralNumberKPT = kpt.CadastralNumber
                                             select new
                                             {
                                                 CadastralNumber = c.CadastralNumber,
-                                                CadastralNumberKPT = cadastralNumberKPT,
+                                                CadastralNumberKPT = c.CadasstralBlockNumber,
                                                 isCoordinates = c.HasCoordinates,
                                                 EntSys = c.CoorSys,
                                                 KeyParameters = c.KeyParameters,
@@ -313,7 +310,7 @@ namespace ReaderXml
                                            select new
                                            {
                                                CadastralNumber = u.CadastralNumber,
-                                               CadastralNumberKPT = cadastralNumberKPT,
+                                               CadastralNumberKPT = u.CadasstralBlockNumber,
                                                isCoordinates = u.HasCoordinates,
                                                EntSys = u.CoorSys,
                                                KeyParameters = u.KeyParameters,
@@ -341,11 +338,10 @@ namespace ReaderXml
                 {
                     int numBound = 1;
                     var boundsExel = from b in kpt.Bounds
-                                     let cadastralNumberKPT = kpt.CadastralNumber
                                      select new
                                      {
                                          AccountNumber = b.AccountNumber,
-                                         CadastralNumberKPT = cadastralNumberKPT,
+                                         CadastralNumberKPT = b.CadasstralBlockNumber,
                                          TypeBoundary = b.TypeBoundary,
                                          Description = b.Description,
                                          isCoordinates = b.HasCoordinates,
@@ -372,11 +368,10 @@ namespace ReaderXml
                 {
                     int numZone = 1;
                     var zonesExel = from z in kpt.Zones
-                                    let cadastralNumberKPT = kpt.CadastralNumber
                                     select new
                                     {
                                         AccountNumber = z.AccountNumber,
-                                        CadastralNumberKPT = cadastralNumberKPT,
+                                        CadastralNumberKPT = z.CadasstralBlockNumber,
                                         TypeZone = z.TypeZone,
                                         Description = z.Description,
                                         isCoordinates = z.HasCoordinates,
