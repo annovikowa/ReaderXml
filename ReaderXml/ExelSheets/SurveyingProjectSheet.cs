@@ -1,13 +1,12 @@
 ﻿using ClosedXML.Excel;
 using ReaderXml.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace ReaderXml.ExelSheets
 {
+    /// <summary>
+    /// Лист "Проект межевания".
+    /// </summary>
     public class SurveyingProjectSheet : ISheet
     {
         public IXLWorksheet Sheet { get; set; }
@@ -16,6 +15,9 @@ namespace ReaderXml.ExelSheets
 
         public List<string> Column => new List<string>() { "Номер кадастрового квартала", "Условный номер ЗУ", "Наличие координат", "Системы координат" };
 
+        /// <summary>
+        /// Строка, с которой начинается заполнение рабочего листа.
+        /// </summary>
         private int _numberSurveyingProject { get; set; } = 2;
 
         public void AddHiberLinks(CadastralPlanTerritory KPT, XLWorkbook XlWorkbook, ref int numObjKpt)

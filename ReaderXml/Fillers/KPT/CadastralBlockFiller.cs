@@ -1,14 +1,9 @@
 ﻿using ReaderXml.Fillers;
 using ReaderXml.Fillers.KPT;
 using ReaderXml.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
 
 namespace ReaderXml.KPT
 {
@@ -21,74 +16,83 @@ namespace ReaderXml.KPT
 
         public void Fill(CadastralBlock model, XmlReader reader)
         {
-            while (reader.Read())
+            try
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                while (reader.Read())
                 {
-                    switch (reader.LocalName)
+                    if (reader.NodeType == XmlNodeType.Element)
                     {
-                        case "Total":
-                            {
-                                model.Area = $"{reader.ReadElementContentAsString()} Га";
-                            }
-                            break;
-                        case "CadastralBlock":
-                            {
-                                reader.MoveToAttribute("CadastralNumber");
-                                model.CadastralNumber = reader.Value;
-                            }
-                            break;
-                        case "Parcel":
-                            {
-                                AddNew(model.Parcels, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "Building":
-                            {
-                                AddNew(model.Buildings, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "Construction":
-                            {
-                                AddNew(model.Constructions, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "Uncompleted":
-                            {
-                                AddNew(model.Uncompleteds, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "Bound":
-                            {
-                                AddNew(model.Bounds, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "Zone":
-                            {
-                                AddNew(model.Zones, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "OMSPoint":
-                            {
-                                AddNew(model.OMSPoints, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "CoordSystems":
-                            {
-                                _coordSystem = FillCoordSystems(reader.ReadSubtree());
-                            }
-                            break;
-                        case "Ordinate":
-                            {
-                                model.HasCoordinates = true;
-                            }
-                            break;
+                        switch (reader.LocalName)
+                        {
+                            case "Total":
+                                {
+                                    model.Area = $"{reader.ReadElementContentAsString()} Га";
+                                }
+                                break;
+                            case "CadastralBlock":
+                                {
+                                    reader.MoveToAttribute("CadastralNumber");
+                                    model.CadastralNumber = reader.Value;
+                                }
+                                break;
+                            case "Parcel":
+                                {
+                                    AddNew(model.Parcels, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "Building":
+                                {
+                                    AddNew(model.Buildings, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "Construction":
+                                {
+                                    AddNew(model.Constructions, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "Uncompleted":
+                                {
+                                    AddNew(model.Uncompleteds, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "Bound":
+                                {
+                                    AddNew(model.Bounds, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "Zone":
+                                {
+                                    AddNew(model.Zones, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "OMSPoint":
+                                {
+                                    AddNew(model.OMSPoints, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "CoordSystems":
+                                {
+                                    _coordSystem = FillCoordSystems(reader.ReadSubtree());
+                                }
+                                break;
+                            case "Ordinate":
+                                {
+                                    model.HasCoordinates = true;
+                                }
+                                break;
 
+                        }
                     }
                 }
+                var allObjects = model.Parcels.Union<CadastralObject>(model.Buildings).Union(model.Constructions).Union(model.Uncompleteds).Union(model.Bounds).Union(model.Zones);
+                DefiningCoordinateSystem(allObjects);
             }
-            var allObjects = model.Parcels.Union<CadastralObject>(model.Buildings).Union(model.Constructions).Union(model.Uncompleteds).Union(model.Bounds).Union(model.Zones);
-            DefiningCoordinateSystem(allObjects);
+            catch (System.Exception)
+            {
+                //log
+            }
+           
+            
         }
 
         /// <summary>
@@ -98,19 +102,29 @@ namespace ReaderXml.KPT
         /// <returns></returns>
         private Dictionary<string, string> FillCoordSystems(XmlReader reader)
         {
-            var dictionary = new Dictionary<string, string>();
-            reader.ReadToDescendant("CoordSystems");
-            while (reader.Read())
+            try
             {
-                if (reader.LocalName == "CoordSystem")
+                var dictionary = new Dictionary<string, string>();
+                reader.ReadToDescendant("CoordSystems");
+                while (reader.Read())
                 {
-                    reader.MoveToAttribute("CsId").ToString();
-                    string CsId = reader.Value;
-                    reader.MoveToAttribute("Name");
-                    dictionary.Add(CsId, reader.Value);
+                    if (reader.LocalName == "CoordSystem")
+                    {
+                        reader.MoveToAttribute("CsId").ToString();
+                        string CsId = reader.Value;
+                        reader.MoveToAttribute("Name");
+                        dictionary.Add(CsId, reader.Value);
+                    }
                 }
+                return dictionary;
             }
-            return dictionary;
+            catch (System.Exception)
+            {
+
+                //log
+                return null;
+            }
+            
         }
         private void AddNew<T>(ICollection<T> collection, XmlReader reader, CadastralBlock model) where T : CadastralObjectInBlock, new()
         {

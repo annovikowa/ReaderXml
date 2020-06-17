@@ -1,12 +1,7 @@
 ﻿using ReaderXml.Fillers;
-using ReaderXml.KPT;
 using ReaderXml.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
+using System;
 
 namespace ReaderXml.ECPT
 {
@@ -17,36 +12,44 @@ namespace ReaderXml.ECPT
     {
         public void Fill(SurveyingProject model, XmlReader reader)
         {
-            while (reader.Read())
+            try
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                while (reader.Read())
                 {
-                    switch (reader.LocalName)
+                    if (reader.NodeType == XmlNodeType.Element)
                     {
-                        case "survey_project_num":
-                            {
-                                model.SurveyProjectNum = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "nominal_number":
-                            {
-                                model.NominalNumber = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "entity_spatial":
-                            {
-                                reader.ReadToDescendant("sk_id");
-                                model.CoorSys = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "ordinate":
-                            model.HasCoordinates = true;
-                            break;
-                        default:
-                            break;
+                        switch (reader.LocalName)
+                        {
+                            case "survey_project_num":
+                                {
+                                    model.SurveyProjectNum = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "nominal_number":
+                                {
+                                    model.NominalNumber = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "entity_spatial":
+                                {
+                                    reader.ReadToDescendant("sk_id");
+                                    model.CoorSys = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "ordinate":
+                                model.HasCoordinates = true;
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
+            catch (Exception)
+            {
+                //log
+            }
+            
         }
     }
 }

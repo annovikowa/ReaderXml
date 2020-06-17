@@ -1,13 +1,13 @@
 ﻿using ClosedXML.Excel;
 using ReaderXml.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReaderXml.ExelSheets
 {
+    /// <summary>
+    /// Лист "ЗУ" (Земельные участки).
+    /// </summary>
     public class ParcelSheet : ISheet
     {
         public IXLWorksheet Sheet { get; set; }
@@ -16,6 +16,9 @@ namespace ReaderXml.ExelSheets
 
         public List<string> Column => new List<string>() { "Кадастровый номер", "Номер кадастрового квартала", "Наличие координат", "Системы координат", "Вид ЗУ", "Кадастровый номер ЕЗП (единого землепользования)", "Площадь", "Категория земель", "Виды разрешенного использования", "Адрес", "Кадастровая стоимость" };
 
+        /// <summary>
+        /// Строка, с которой начинается заполнение рабочего листа.
+        /// </summary>
         private int _numberParcels { get; set; } = 2;
         public void Fill(CadastralPlanTerritory KPT)
         {

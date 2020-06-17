@@ -1,11 +1,6 @@
 ﻿using ReaderXml.ECPT;
 using ReaderXml.KPT;
 using ReaderXml.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReaderXml.Fillers
 {

@@ -1,13 +1,9 @@
 ﻿using ReaderXml.Fillers;
 using ReaderXml.Fillers.ECPT;
-using ReaderXml.KPT;
 using ReaderXml.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
+using System;
 
 namespace ReaderXml.ECPT
 {
@@ -32,87 +28,95 @@ namespace ReaderXml.ECPT
 
         public void Fill(CadastralBlock model, XmlReader reader)
         {
-            while (reader.Read())
+            try
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                while (reader.Read())
                 {
-                    switch (reader.LocalName)
+                    if (reader.NodeType == XmlNodeType.Element)
                     {
-                        case "area_quarter":
-                            {
-                                reader.ReadToDescendant("area");
-                                model.Area = $"{reader.ReadElementContentAsString()} Га";
-                            }
-                            break;
-                        case "cadastral_number":
-                            {
-                                model.CadastralNumber = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "land_record":
-                            {
-                                AddNew(model.Parcels, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "build_record":
-                            {
-                                AddNew(model.Buildings, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "construction_record":
-                            {
-                                AddNew(model.Constructions, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "object_under_construction_record":
-                            {
-                                AddNew(model.Uncompleteds, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "subject_boundary_record":
-                            {
-                                AddNew(model.Bounds, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "municipal_boundary_record":
-                            {
-                                AddNew(model.Bounds, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "inhabited_locality_boundary_record":
-                            {
-                                AddNew(model.Bounds, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "coastline_record":
-                            {
-                                AddNew(model.Bounds, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "zones_and_territories_record":
-                            {
-                                AddNew(model.Zones, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "surveying_project_record":
-                            {
-                                AddNew(model.SurveyingProjects, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "oms_point":
-                            {
-                                AddNew(model.OMSPoints, reader.ReadSubtree(), model);
-                            }
-                            break;
-                        case "ordinate":
-                            {
-                                model.HasCoordinates = true;
-                            }
-                            break;
+                        switch (reader.LocalName)
+                        {
+                            case "area_quarter":
+                                {
+                                    reader.ReadToDescendant("area");
+                                    model.Area = $"{reader.ReadElementContentAsString()} Га";
+                                }
+                                break;
+                            case "cadastral_number":
+                                {
+                                    model.CadastralNumber = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "land_record":
+                                {
+                                    AddNew(model.Parcels, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "build_record":
+                                {
+                                    AddNew(model.Buildings, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "construction_record":
+                                {
+                                    AddNew(model.Constructions, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "object_under_construction_record":
+                                {
+                                    AddNew(model.Uncompleteds, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "subject_boundary_record":
+                                {
+                                    AddNew(model.Bounds, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "municipal_boundary_record":
+                                {
+                                    AddNew(model.Bounds, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "inhabited_locality_boundary_record":
+                                {
+                                    AddNew(model.Bounds, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "coastline_record":
+                                {
+                                    AddNew(model.Bounds, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "zones_and_territories_record":
+                                {
+                                    AddNew(model.Zones, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "surveying_project_record":
+                                {
+                                    AddNew(model.SurveyingProjects, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "oms_point":
+                                {
+                                    AddNew(model.OMSPoints, reader.ReadSubtree(), model);
+                                }
+                                break;
+                            case "ordinate":
+                                {
+                                    model.HasCoordinates = true;
+                                }
+                                break;
 
+                        }
                     }
                 }
             }
+            catch (Exception)
+            {
+                //log
+            }
+            
         }
     }
 }

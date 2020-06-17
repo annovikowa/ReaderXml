@@ -1,10 +1,6 @@
 ﻿using ReaderXml.Fillers;
 using ReaderXml.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace ReaderXml.KPT
@@ -16,65 +12,73 @@ namespace ReaderXml.KPT
     {                
         public void Fill(Bound model, XmlReader reader)
         {
-            while (reader.Read())
+            try
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                while (reader.Read())
                 {
-                    switch (reader.LocalName)
+                    if (reader.NodeType == XmlNodeType.Element)
                     {
-                        case "AccountNumber":
-                            {
-                                model.AccountNumber = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "NameNeighbours":
-                            {
-                                model.TypeBoundary = "Граница между субъектами Российской Федерации";
-                                if (String.IsNullOrEmpty(model.AdditionalInformation))
-                                    model.AdditionalInformation += reader.ReadElementContentAsString();
-                                else
-                                    model.AdditionalInformation += $", {reader.ReadElementContentAsString()}";
-                            }
-                            break;
-                        case "MunicipalBoundary":
-                            {
-                                model.TypeBoundary = "Граница муниципального образования";
-                                reader.ReadToDescendant("Name");
-                                if (String.IsNullOrEmpty(model.AdditionalInformation))
-                                    model.AdditionalInformation += reader.ReadElementContentAsString();
-                                else
-                                    model.AdditionalInformation += $", {reader.ReadElementContentAsString()}";
-                            }
-                            break;
-                        case "InhabitedLocalityBoundary":
-                            {
-                                model.TypeBoundary = "Граница населенного пункта";
-                                reader.ReadToDescendant("Name");
-                                if (String.IsNullOrEmpty(model.AdditionalInformation))
-                                    model.AdditionalInformation += reader.ReadElementContentAsString();
-                                else
-                                    model.AdditionalInformation += $", {reader.ReadElementContentAsString()}";
-                            }
-                            break;
-                        case "Description":
-                            {
-                                model.Description = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "EntitySpatial":
-                            {
-                                reader.MoveToAttribute("EntSys");
-                                model.CoorSys = reader.Value.ToString();
-                            }
-                            break;
-                        case "Ordinate":
-                            model.HasCoordinates = true;
-                            break;
-                        default:
-                            break;
+                        switch (reader.LocalName)
+                        {
+                            case "AccountNumber":
+                                {
+                                    model.AccountNumber = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "NameNeighbours":
+                                {
+                                    model.TypeBoundary = "Граница между субъектами Российской Федерации";
+                                    if (String.IsNullOrEmpty(model.AdditionalInformation))
+                                        model.AdditionalInformation += reader.ReadElementContentAsString();
+                                    else
+                                        model.AdditionalInformation += $", {reader.ReadElementContentAsString()}";
+                                }
+                                break;
+                            case "MunicipalBoundary":
+                                {
+                                    model.TypeBoundary = "Граница муниципального образования";
+                                    reader.ReadToDescendant("Name");
+                                    if (String.IsNullOrEmpty(model.AdditionalInformation))
+                                        model.AdditionalInformation += reader.ReadElementContentAsString();
+                                    else
+                                        model.AdditionalInformation += $", {reader.ReadElementContentAsString()}";
+                                }
+                                break;
+                            case "InhabitedLocalityBoundary":
+                                {
+                                    model.TypeBoundary = "Граница населенного пункта";
+                                    reader.ReadToDescendant("Name");
+                                    if (String.IsNullOrEmpty(model.AdditionalInformation))
+                                        model.AdditionalInformation += reader.ReadElementContentAsString();
+                                    else
+                                        model.AdditionalInformation += $", {reader.ReadElementContentAsString()}";
+                                }
+                                break;
+                            case "Description":
+                                {
+                                    model.Description = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "EntitySpatial":
+                                {
+                                    reader.MoveToAttribute("EntSys");
+                                    model.CoorSys = reader.Value.ToString();
+                                }
+                                break;
+                            case "Ordinate":
+                                model.HasCoordinates = true;
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
+            catch (Exception)
+            {
+                //log
+            }
+            
         }
     }
 }

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace ReaderXml.ECPT
@@ -51,51 +48,59 @@ namespace ReaderXml.ECPT
         /// <param name="reader">XmlReader узла адреса.</param>
         public Address(XmlReader reader)
         {
-            while (reader.Read())
+            try
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                while (reader.Read())
                 {
-                    switch (reader.LocalName)
+                    if (reader.NodeType == XmlNodeType.Element)
                     {
-                        case string node when SequenceAddress.Contains(node):
-                            {
-                                if (node == "postal_code" || node == "other" || node == "note")
-                                    DictionaryAddress.Add(node, reader.ReadElementContentAsString());
-                                else if (node == "region")
+                        switch (reader.LocalName)
+                        {
+                            case string node when SequenceAddress.Contains(node):
                                 {
-                                    reader.ReadToDescendant("value");
-                                    DictionaryAddress.Add(node, reader.ReadElementContentAsString());
+                                    if (node == "postal_code" || node == "other" || node == "note")
+                                        DictionaryAddress.Add(node, reader.ReadElementContentAsString());
+                                    else if (node == "region")
+                                    {
+                                        reader.ReadToDescendant("value");
+                                        DictionaryAddress.Add(node, reader.ReadElementContentAsString());
+                                    }
+                                    else
+                                        DictionaryAddress.Add(node, ReadNode(reader.ReadSubtree(), node));
                                 }
-                                else
-                                    DictionaryAddress.Add(node, ReadNode(reader.ReadSubtree(), node));
-                            }
-                            break;
-                        case "in_boundaries_mark":
-                            {
-                                InBoundariesMark = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "ref_point_name":
-                            {
-                                RefPointName = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "location_description":
-                            {
-                                LocationDescription = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "readable_address":
-                            {
-                                ReadableAddress = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        default:
-                            break;
+                                break;
+                            case "in_boundaries_mark":
+                                {
+                                    InBoundariesMark = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "ref_point_name":
+                                {
+                                    RefPointName = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "location_description":
+                                {
+                                    LocationDescription = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "readable_address":
+                                {
+                                    ReadableAddress = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
+                reader.Close();
             }
-            reader.Close();
+            catch (Exception)
+            {
+                //log
+            }
+            
         }
         
         /// <summary>

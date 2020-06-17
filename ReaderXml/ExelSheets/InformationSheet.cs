@@ -1,13 +1,11 @@
 ﻿using ClosedXML.Excel;
 using ReaderXml.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace ReaderXml.ExelSheets
 {
+    /// <summary>
+    /// Лист "Сводная информация".
+    /// </summary>
     public class InformationSheet : ISheet
     {
         public IXLWorksheet Sheet { get; set; }

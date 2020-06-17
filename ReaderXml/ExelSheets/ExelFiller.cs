@@ -1,19 +1,23 @@
 ﻿using ClosedXML.Excel;
 using ReaderXml.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReaderXml.ExelSheets
 {
+    /// <summary>
+    /// Класс заполненя рабочей книги Exel.
+    /// </summary>
     public class ExelFiller
     {
+        /// <summary>
+        /// Рабочая книга Exel.
+        /// </summary>
         public XLWorkbook XlWorkbook { get; private set; } = new XLWorkbook();
 
-
-        
+        /// <summary>
+        /// Заполнение листов в книге.
+        /// </summary>
+        /// <param name="KPT">Необходимые данные для заполнения.</param>
         public ExelFiller(CadastralPlanTerritory KPT)
         {
             int numObjKpt = 5;

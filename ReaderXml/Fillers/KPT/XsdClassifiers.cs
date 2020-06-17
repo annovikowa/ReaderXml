@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -53,55 +50,63 @@ namespace ReaderXml.KPT
             var nsManager = new XmlNamespaceManager(new NameTable());
             nsManager.AddNamespace("xs", "http://www.w3.org/2001/XMLSchema");
 
-            foreach (var list in _listDictionary)
+            try
             {
-                var xsd = XElement.Load(@$"D:\ReaderXml\ReaderXml\КПТ\Схемы\KPT_v10\SchemaCommon\{list}.xsd");
-                switch (list)
+                foreach (var list in _listDictionary)
                 {
-                    case "dRegionsRF_v01":
-                        {
-                            AddressRegion = FillXsdClassifiers(xsd, nsManager);
-                        }
-                        break;
-                    case "dParcels_v01":
-                        {
-                            ParcelsName = FillXsdClassifiers(xsd, nsManager);
-                        }
-                        break;
-                    case "dCategories_v01":
-                        {
-                            ParcelsCategory = FillXsdClassifiers(xsd, nsManager);
-                        }
-                        break;
-                    case "dUtilizations_v01":
-                        {
-                            Utilization = FillXsdClassifiers(xsd, nsManager);
-                        }
-                        break;
-                    case "dAllowedUse_v02":
-                        {
-                            LandUse = FillXsdClassifiers(xsd, nsManager);
-                        }
-                        break;
-                    case "dRealty_v03":
-                        {
-                            ObjectType = FillXsdClassifiers(xsd, nsManager);
-                        }
-                        break;
-                    case "dTypeParameter_v01":
-                        {
-                            KeyParameters = FillXsdClassifiers(xsd, nsManager);
-                        }
-                        break;
-                    case "dPermitUse_v01":
-                        {
-                            PermitUse = FillXsdClassifiers(xsd, nsManager);
-                        }
-                        break;
-                    default:
-                        break;
+                    var xsd = XElement.Load(@$"D:\ReaderXml\ReaderXml\КПТ\Схемы\KPT_v10\SchemaCommon\{list}.xsd");
+                    switch (list)
+                    {
+                        case "dRegionsRF_v01":
+                            {
+                                AddressRegion = FillXsdClassifiers(xsd, nsManager);
+                            }
+                            break;
+                        case "dParcels_v01":
+                            {
+                                ParcelsName = FillXsdClassifiers(xsd, nsManager);
+                            }
+                            break;
+                        case "dCategories_v01":
+                            {
+                                ParcelsCategory = FillXsdClassifiers(xsd, nsManager);
+                            }
+                            break;
+                        case "dUtilizations_v01":
+                            {
+                                Utilization = FillXsdClassifiers(xsd, nsManager);
+                            }
+                            break;
+                        case "dAllowedUse_v02":
+                            {
+                                LandUse = FillXsdClassifiers(xsd, nsManager);
+                            }
+                            break;
+                        case "dRealty_v03":
+                            {
+                                ObjectType = FillXsdClassifiers(xsd, nsManager);
+                            }
+                            break;
+                        case "dTypeParameter_v01":
+                            {
+                                KeyParameters = FillXsdClassifiers(xsd, nsManager);
+                            }
+                            break;
+                        case "dPermitUse_v01":
+                            {
+                                PermitUse = FillXsdClassifiers(xsd, nsManager);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
+            catch (System.Exception)
+            {
+                //log
+            }
+            
         }
         private Dictionary<string, string> FillXsdClassifiers(XElement xsd, XmlNamespaceManager nsManager)
         {

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
+﻿using System.Xml;
 using ReaderXml.Fillers;
-using ReaderXml.KPT;
 using ReaderXml.Models;
+using System;
 
 namespace ReaderXml.ECPT
 {
@@ -90,53 +85,61 @@ namespace ReaderXml.ECPT
         /// <param name="reader">XmlReader узла основных характеристик.</param>
         private void FillBaseParameters(XmlReader reader, Construction model)
         {
-            while (reader.Read())
+            try
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                while (reader.Read())
                 {
-                    switch (reader.LocalName)
+                    if (reader.NodeType == XmlNodeType.Element)
                     {
-                        case "area":
-                            {
-                                model.KeyParameters += $"Площадь: {reader.ReadElementContentAsString()} кв.м. ";
-                            }
-                            break;
-                        case "built_up_area":
-                            {
-                                model.KeyParameters += $"Площадь: {reader.ReadElementContentAsString()} кв.м. ";
-                            }
-                            break;
-                        case "extension":
-                            {
-                                model.KeyParameters += $"Протяженность: {reader.ReadElementContentAsString()} м. ";
-                            }
-                            break;
-                        case "depth":
-                            {
-                                model.KeyParameters += $"Глубина: {reader.ReadElementContentAsString()} м. ";
-                            }
-                            break;
-                        case "occurence_depth":
-                            {
-                                model.KeyParameters += $"Глубина залегания: {reader.ReadElementContentAsString()} м. ";
-                            }
-                            break;
-                        case "volume":
-                            {
-                                model.KeyParameters += $"Объем: {reader.ReadElementContentAsString()} куб.м. ";
-                            }
-                            break;
-                        case "height":
-                            {
-                                model.KeyParameters += $"Высота: {reader.ReadElementContentAsString()} м. ";
-                            }
-                            break;
-                        default:
-                            break;
+                        switch (reader.LocalName)
+                        {
+                            case "area":
+                                {
+                                    model.KeyParameters += $"Площадь: {reader.ReadElementContentAsString()} кв.м. ";
+                                }
+                                break;
+                            case "built_up_area":
+                                {
+                                    model.KeyParameters += $"Площадь: {reader.ReadElementContentAsString()} кв.м. ";
+                                }
+                                break;
+                            case "extension":
+                                {
+                                    model.KeyParameters += $"Протяженность: {reader.ReadElementContentAsString()} м. ";
+                                }
+                                break;
+                            case "depth":
+                                {
+                                    model.KeyParameters += $"Глубина: {reader.ReadElementContentAsString()} м. ";
+                                }
+                                break;
+                            case "occurence_depth":
+                                {
+                                    model.KeyParameters += $"Глубина залегания: {reader.ReadElementContentAsString()} м. ";
+                                }
+                                break;
+                            case "volume":
+                                {
+                                    model.KeyParameters += $"Объем: {reader.ReadElementContentAsString()} куб.м. ";
+                                }
+                                break;
+                            case "height":
+                                {
+                                    model.KeyParameters += $"Высота: {reader.ReadElementContentAsString()} м. ";
+                                }
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
+                reader.Close();
             }
-            reader.Close();
+            catch (Exception)
+            {
+                //log
+            }
+           
         }
     }
 }

@@ -1,11 +1,9 @@
 ﻿using ReaderXml.Fillers;
 using ReaderXml.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
+using System;
 
 namespace ReaderXml.KPT
 {
@@ -16,59 +14,67 @@ namespace ReaderXml.KPT
     {
         public void Fill(Zone model, XmlReader reader)
         {
-            var xsdDictionaries = XsdClassifiers.GetInstance();
-            while (reader.Read())
+            try
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                var xsdDictionaries = XsdClassifiers.GetInstance();
+                while (reader.Read())
                 {
-                    switch (reader.LocalName)
+                    if (reader.NodeType == XmlNodeType.Element)
                     {
-                        case "AccountNumber":
-                            {
-                                model.AccountNumber = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "Description":
-                            {
-                                model.Description = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "ContentRestrictions":
-                            {
-                                model.AdditionalInformation = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "TerritorialZone":
-                            {
-                                model.TypeZone = "Территориальная зона";
-                            }
-                            break;
-                        case "SpecialZone":
-                            {
-                                model.TypeZone = "Зона с особыми условиями использования территорий";
-                            }
-                            break;
-                        case "PermittedUse":
-                            {
-                                var separator = string.IsNullOrWhiteSpace(model.AdditionalInformation) ? "" : "; ";
-                                model.AdditionalInformation += separator + ExtractingAdditionalInformation(reader.ReadSubtree(), xsdDictionaries);
+                        switch (reader.LocalName)
+                        {
+                            case "AccountNumber":
+                                {
+                                    model.AccountNumber = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "Description":
+                                {
+                                    model.Description = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "ContentRestrictions":
+                                {
+                                    model.AdditionalInformation = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "TerritorialZone":
+                                {
+                                    model.TypeZone = "Территориальная зона";
+                                }
+                                break;
+                            case "SpecialZone":
+                                {
+                                    model.TypeZone = "Зона с особыми условиями использования территорий";
+                                }
+                                break;
+                            case "PermittedUse":
+                                {
+                                    var separator = string.IsNullOrWhiteSpace(model.AdditionalInformation) ? "" : "; ";
+                                    model.AdditionalInformation += separator + ExtractingAdditionalInformation(reader.ReadSubtree(), xsdDictionaries);
 
-                            }
-                            break;
-                        case "EntitySpatial":
-                            {
-                                reader.MoveToAttribute("EntSys");
-                                model.CoorSys = reader.Value.ToString();
-                            }
-                            break;
-                        case "Ordinate":
-                            model.HasCoordinates = true;
-                            break;
-                        default:
-                            break;
+                                }
+                                break;
+                            case "EntitySpatial":
+                                {
+                                    reader.MoveToAttribute("EntSys");
+                                    model.CoorSys = reader.Value.ToString();
+                                }
+                                break;
+                            case "Ordinate":
+                                model.HasCoordinates = true;
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
+            catch (Exception)
+            {
+                //log
+            }
+            
         }
 
         /// <summary>

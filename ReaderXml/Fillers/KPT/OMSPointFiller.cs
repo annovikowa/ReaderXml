@@ -1,10 +1,5 @@
 ﻿using ReaderXml.Fillers;
 using ReaderXml.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace ReaderXml.KPT
@@ -16,42 +11,50 @@ namespace ReaderXml.KPT
     {
         public void Fill(OMSPoint model, XmlReader reader)
         {
-            while (reader.Read())
+            try
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                while (reader.Read())
                 {
-                    switch (reader.LocalName)
+                    if (reader.NodeType == XmlNodeType.Element)
                     {
-                        case "PNmb":
-                            {
-                                model.PNmb = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "PName":
-                            {
-                                model.PName = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "PKlass":
-                            {
-                                model.PKlass = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "OrdX":
-                            {
-                                model.OrdX = reader.ReadElementContentAsDecimal();
-                            }
-                            break;
-                        case "OrdY":
-                            {
-                                model.OrdY = reader.ReadElementContentAsDecimal();
-                            }
-                            break;
-                        default:
-                            break;
+                        switch (reader.LocalName)
+                        {
+                            case "PNmb":
+                                {
+                                    model.PNmb = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "PName":
+                                {
+                                    model.PName = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "PKlass":
+                                {
+                                    model.PKlass = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "OrdX":
+                                {
+                                    model.OrdX = reader.ReadElementContentAsDecimal();
+                                }
+                                break;
+                            case "OrdY":
+                                {
+                                    model.OrdY = reader.ReadElementContentAsDecimal();
+                                }
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
+            catch (System.Exception)
+            {
+                //log
+            }
+           
         }
     }
 }

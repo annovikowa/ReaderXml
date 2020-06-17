@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace ReaderXml.KPT
@@ -33,43 +30,51 @@ namespace ReaderXml.KPT
         /// <param name="dictionatyAddress">Словарь адресных элементов.</param>
         public Address(XmlReader reader, Dictionary<string, string> dictionaryRegion)
         {
-            while (reader.Read())
+            try
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                while (reader.Read())
                 {
-                    switch (reader.LocalName)
+                    if (reader.NodeType == XmlNodeType.Element)
                     {
-                        case string node when SequenceAddress.Contains(node):
-                            {
-                                string value = "";
-                                if (reader.MoveToAttribute("Type"))
+                        switch (reader.LocalName)
+                        {
+                            case string node when SequenceAddress.Contains(node):
                                 {
-                                    value = $"{reader.Value} ";
-
-                                    if (reader.MoveToAttribute("Name"))
-                                        value += reader.Value;
-                                    else
+                                    string value = "";
+                                    if (reader.MoveToAttribute("Type"))
                                     {
-                                        reader.MoveToAttribute("Value");
-                                        value += reader.Value;
+                                        value = $"{reader.Value} ";
+
+                                        if (reader.MoveToAttribute("Name"))
+                                            value += reader.Value;
+                                        else
+                                        {
+                                            reader.MoveToAttribute("Value");
+                                            value += reader.Value;
+                                        }
+                                        if (!String.IsNullOrWhiteSpace(value))
+                                            DictionaryAddress.Add(node, value);
                                     }
-                                    if (!String.IsNullOrWhiteSpace(value))
-                                        DictionaryAddress.Add(node, value);
+                                    else if (node == "Region")
+                                    {
+                                        if (dictionaryRegion.TryGetValue(reader.ReadElementContentAsString(), out var region))
+                                            DictionaryAddress.Add(node, region);
+                                    }
+                                    else
+                                        DictionaryAddress.Add(node, reader.ReadElementContentAsString());
                                 }
-                                else if (node == "Region")
-                                {
-                                    if (dictionaryRegion.TryGetValue(reader.ReadElementContentAsString(), out var region))
-                                        DictionaryAddress.Add(node, region);
-                                }
-                                else
-                                    DictionaryAddress.Add(node, reader.ReadElementContentAsString());
-                            }
-                            break;
-                        default:
-                            break;
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
+            catch (Exception)
+            { 
+                //log
+            }
+           
         }
     }
 
@@ -108,41 +113,49 @@ namespace ReaderXml.KPT
         /// <param name="dictionaryAddress">Словарь адресных элементов.</param>
         public Location(XmlReader reader, Dictionary<string, string> dictionaryRegion)
         {
-            while (reader.Read())
+            try
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                while (reader.Read())
                 {
-                    switch (reader.LocalName)
+                    if (reader.NodeType == XmlNodeType.Element)
                     {
-                        case "inBounds":
-                            {
-                                inBounds = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "Placed":
-                            {
-                                Placed = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "Elaboration":
-                            {
-                                var inner = reader.ReadSubtree();
-                                Elaboration = new Elaboration(inner);
-                                inner.Close();
-                            }
-                            break;
-                        case "Address":
-                            {
-                                var inner = reader.ReadSubtree();
-                                Address = new Address(inner, dictionaryRegion);
-                                inner.Close();
-                            }
-                            break;
-                        default:
-                            break;
+                        switch (reader.LocalName)
+                        {
+                            case "inBounds":
+                                {
+                                    inBounds = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "Placed":
+                                {
+                                    Placed = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "Elaboration":
+                                {
+                                    var inner = reader.ReadSubtree();
+                                    Elaboration = new Elaboration(inner);
+                                    inner.Close();
+                                }
+                                break;
+                            case "Address":
+                                {
+                                    var inner = reader.ReadSubtree();
+                                    Address = new Address(inner, dictionaryRegion);
+                                    inner.Close();
+                                }
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
+            catch (Exception)
+            {
+                //log
+            }
+            
 
         }
 
@@ -236,33 +249,41 @@ namespace ReaderXml.KPT
         /// <param name="reader">XmlReader узла уточнения местоположения.</param>
         public Elaboration(XmlReader reader)
         {
-            while (reader.Read())
+            try
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                while (reader.Read())
                 {
-                    switch (reader.LocalName)
+                    if (reader.NodeType == XmlNodeType.Element)
                     {
-                        case "ReferenceMark":
-                            {
-                                ReferenceMark = reader.ReadElementContentAsString();
-                                ReferenceMark = String.IsNullOrEmpty(ReferenceMark) ? "" : $"Ориентир {ReferenceMark}. ";
-                            }
-                            break;
-                        case "Distance":
-                            {
-                                Distance = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        case "Direction":
-                            {
-                                Direction = reader.ReadElementContentAsString();
-                            }
-                            break;
-                        default:
-                            break;
+                        switch (reader.LocalName)
+                        {
+                            case "ReferenceMark":
+                                {
+                                    ReferenceMark = reader.ReadElementContentAsString();
+                                    ReferenceMark = String.IsNullOrEmpty(ReferenceMark) ? "" : $"Ориентир {ReferenceMark}. ";
+                                }
+                                break;
+                            case "Distance":
+                                {
+                                    Distance = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            case "Direction":
+                                {
+                                    Direction = reader.ReadElementContentAsString();
+                                }
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
+            catch (Exception)
+            {
+                //log
+            }
+            
         }
     }
 }
