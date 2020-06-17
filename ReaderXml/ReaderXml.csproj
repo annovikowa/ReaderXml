@@ -59,10 +59,18 @@
   <ItemGroup>
     <Compile Include="CadastralObjectInBlock.cs" />
     <Compile Include="CadastralPlanTerritoryReader.cs" />
+    <Compile Include="ExelSheets\BoundSheet.cs" />
+    <Compile Include="ExelSheets\BuildingSheet.cs" />
     <Compile Include="ExelSheets\CadastralSheet.cs" />
+    <Compile Include="ExelSheets\ConstructionSheet.cs" />
     <Compile Include="ExelSheets\ExelFiller.cs" />
     <Compile Include="ExelSheets\InformationSheet.cs" />
     <Compile Include="ExelSheets\ISheet.cs" />
+    <Compile Include="ExelSheets\OMSPointSheet.cs" />
+    <Compile Include="ExelSheets\ParcelSheet.cs" />
+    <Compile Include="ExelSheets\SurveyingProjectSheet.cs" />
+    <Compile Include="ExelSheets\UncompletedSheet.cs" />
+    <Compile Include="ExelSheets\ZoneSheet.cs" />
     <Compile Include="Fillers\ECPT\Address.cs" />
     <Compile Include="Fillers\ECPT\BuildFiller.cs" />
     <Compile Include="Fillers\ECPT\CadastralBlockFiller.cs" />

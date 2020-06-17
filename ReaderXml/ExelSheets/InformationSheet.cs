@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using ReaderXml.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,22 @@ namespace ReaderXml.ExelSheets
 
         public List<string> Column { get; } = new List<string>() { "Имя XML-файла", "Наименование органа регистрации прав", "Номер и дата выдачи КПТ", "ФИО и должность сотрудника, который выдал КПТ" };
 
-        public void Transpose()
+        public void AddHiberLinks(CadastralPlanTerritory KPT, XLWorkbook XlWorkbook, ref int numObjKpt)
         {
-            var rng = Sheet.Range("A1:A4");
-            rng.Transpose(XLTransposeOptions.MoveCells);
+            
+        }
+
+        public void Fill(CadastralPlanTerritory KPT)
+        {
+            Sheet.Cell("A4").Value = "Кадастровый номер";
+            Sheet.Cell("B4").Value = "Вид объекта";
+            Sheet.Cell("C4").Value = "Наличие или остутствие координат";
+
+            Sheet.Cell("B2").Value = KPT.OrganRegistrRights;
+            Sheet.Cell("C2").Value = KPT.DateFormation;
+            Sheet.Cell("C2").Style.DateFormat.Format = "yyyy-MM-dd";
+            Sheet.Cell("C2").Value += ", " + KPT.RegistrationNumber;
+            Sheet.Cell("D2").Value = KPT.Official; 
         }
     }
 }

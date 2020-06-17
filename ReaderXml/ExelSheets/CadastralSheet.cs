@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using ReaderXml.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,25 @@ namespace ReaderXml.ExelSheets
 
         public List<string> Column { get; } = new List<string>() { "Номер кадастрового квартала", "Наличие координат", "Площадь" };
 
-        public void Transpose()
+        public void AddHiberLinks(CadastralPlanTerritory KPT, XLWorkbook XlWorkbook, ref int numObjKpt)
         {
-            var rng = Sheet.Range("A1:A3");
-            rng.Transpose(XLTransposeOptions.MoveCells);
+            
+        }
+
+        public void Fill(CadastralPlanTerritory KPT)
+        {
+            int line = 2;
+            foreach (var cadastralBlock in KPT.CadastralBlocks)
+            {
+                for (;;)
+                {
+                    int column = 1;
+                    Sheet.Cell(line, column++).Value = cadastralBlock.CadastralNumber;
+                    Sheet.Cell(line, column++).Value = cadastralBlock.HasCoordinates;
+                    Sheet.Cell(line++, column).Value = cadastralBlock.Area;
+                    break;
+                }
+            }
         }
     }
 }

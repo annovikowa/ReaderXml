@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using ReaderXml.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace ReaderXml.ExelSheets
         IXLWorksheet Sheet { get; set; }
         string Title { get; }
         List<string> Column { get; }
-        void Transpose();
+        void Fill(CadastralPlanTerritory KPT);
+        void AddHiberLinks(CadastralPlanTerritory KPT, XLWorkbook XlWorkbook, ref int numObjKpt);
     }
 }
