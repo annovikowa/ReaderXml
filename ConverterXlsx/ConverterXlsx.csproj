@@ -129,13 +129,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Global.asax" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DB\ConverterXlsxContext.cs" />
+    <Compile Include="DB\ConverterXlsxRepository.cs" />
     <Compile Include="DB\Models\Conversion.cs" />
     <Compile Include="DB\Models\Error.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\XlsxController.cs" />
+    <Compile Include="RouteConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -148,7 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReaderXml\ReaderXml.csproj">
-      <Project>{D55239BC-3ABE-4A7C-9CF0-E177C2F99F6D}</Project>
+      <Project>{d55239bc-3abe-4a7c-9cf0-e177c2f99f6d}</Project>
       <Name>ReaderXml</Name>
     </ProjectReference>
   </ItemGroup>
