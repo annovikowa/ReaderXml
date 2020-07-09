@@ -19,5 +19,11 @@ namespace ConverterXlsx.DB.Models
         /// Статусы бывают только определенные, можно сделать перечисление.
         /// </summary>
         public string Status { get; set; }
+        public Conversion(string id, string pathInput, string status)
+        {
+            Id = id;
+            PathInput = pathInput;
+            Status = status;
+        }
     }
 }

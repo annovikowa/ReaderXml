@@ -55,8 +55,8 @@ namespace ReaderXml.ExelSheets
                                         UnitedCadNumbers = b.UnitedCadNumbers,
                                         Area = b.Area,
                                         ObjectType = b.ObjectType,
-                                        Address = b.Address,
                                         PermittedUse = b.PermittedUse,
+                                        Address = b.Address,
                                         CadastralCost = b.CadastralCost
                                     };
 

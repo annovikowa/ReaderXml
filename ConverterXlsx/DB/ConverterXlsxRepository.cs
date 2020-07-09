@@ -58,5 +58,12 @@ namespace ConverterXlsx.DB
             //важно при получении коллекций из БД делать ToArray\ToList и т.д. т.к. в случае обработки их циклом будут возникать исключения
             return Context.Conversions.ToArray();
         }
+
+        public Conversion GetConversion(string id)
+        {
+            var conversion = _converterXlsxContext.Conversions.
+                FirstOrDefault(i => i.Id == id);
+                return conversion;
+        }
     }
 }

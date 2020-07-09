@@ -25,6 +25,7 @@ namespace ReaderXml.ExelSheets
             Sheet.Cell("B4").Value = "Вид объекта";
             Sheet.Cell("C4").Value = "Наличие или остутствие координат";
 
+            Sheet.Cell("A2").Value = KPT.FileName;
             Sheet.Cell("B2").Value = KPT.OrganRegistrRights;
             Sheet.Cell("C2").Value = KPT.DateFormation;
             Sheet.Cell("C2").Style.DateFormat.Format = "yyyy-MM-dd";

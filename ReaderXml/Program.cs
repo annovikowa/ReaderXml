@@ -6,7 +6,7 @@ namespace ReaderXml
     {
         static void Main(string[] args)
         {
-            string file = @"D:\ReaderXml\ReaderXml\КПТ\Примеры\extract_cadastral_plan_territory\84_01_0010104_2017-05-31_kpt11.xml";
+            string file = @"D:\ReaderXml\ReaderXml\КПТ\Примеры\KPT (v10)\kpt10_doc27877366.xml";
             var reader = new CadastralPlanTerritoryReader();
             var KPT = reader.Read(file);
 

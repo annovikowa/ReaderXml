@@ -27,6 +27,7 @@ namespace ReaderXml
                         return null;
                     }
                     filler.Fill(result, reader);
+                    result.FileName = System.IO.Path.GetFileName(fileName);
                     reader.Close();
                     return result;
                 }

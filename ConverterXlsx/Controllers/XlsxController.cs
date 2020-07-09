@@ -7,11 +7,20 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
+using System.Threading;
+using ConverterXlsx.DB.Models;
 
 namespace ConverterXlsx.Controllers
 {
     public class XlsxController : ApiController
-    {
+    {        
+        enum Status
+        {
+            Created,
+            InProcess,
+            Ready
+        }
+
         [HttpPost]
         public IHttpActionResult UploadFile()
         {
@@ -24,31 +33,47 @@ namespace ConverterXlsx.Controllers
             var path = System.Web.Hosting.HostingEnvironment.MapPath("some_path"); //тут надо указать папку для файлов
             //дополнительно добавить имя
             file.SaveAs(path);
-            long id = 1;
+            string id = "";
             using (var database = ConverterXlsxRepository.GetInstance())
             {
-                
                 //записать все в бд, получить id
+                id = System.Guid.NewGuid().ToString();
+                Conversion conversion = new Conversion(id, path, Status.Created.ToString());
+                database.Context.Conversions.Add(conversion);                
                 database.SaveChanges();
             }
+
             //запустить конвертацию: реализовать для этого очередь (в отдельном потоке), примеры можно легко найти
+            ConverterHelper converterHelper = new ConverterHelper();
+            Thread thread = new Thread(new ParameterizedThreadStart(converterHelper.Convertions));
+            thread.Start(path);
+
             return Ok(id);
         }
         [HttpGet]
-        public IHttpActionResult GetStatus(long id)
+        public IHttpActionResult GetStatus(string id)
         {
             using (var database = ConverterXlsxRepository.GetInstance())
             {
                 //добавить в репозиторий метод поиска по id, найден - вернуть Ok(status), не найден - NotFound(). Если есть ошибки - вернуть и их.
-                return Ok();
+                var result = database.GetConversion(id);
+                if (result != null)
+                    return Ok(result.Status);
+                else
+                    return NotFound();
             }
             
         }
         [HttpGet]
-        public HttpResponseMessage GetFile(long id)
+        public HttpResponseMessage GetFile(string id)
         {
             //получить путь из БД
-            var path = @"C:\Temp\test.exe";
+            string path = "";
+            using (var database = ConverterXlsxRepository.GetInstance())
+            {
+                path = database.GetConversion(id).PathOutput;
+            }
+
             HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
             var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
             result.Content = new StreamContent(stream);
