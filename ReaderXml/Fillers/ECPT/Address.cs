@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Xml;
 
+
 namespace ReaderXml.ECPT
 {
     /// <summary>
@@ -96,8 +97,8 @@ namespace ReaderXml.ECPT
                 }
                 reader.Close();
             }
-            catch (Exception)
-            {
+            catch (Exception ex)
+            {                
                 //log
             }
             

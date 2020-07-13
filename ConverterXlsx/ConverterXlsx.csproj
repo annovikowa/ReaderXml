@@ -137,6 +137,7 @@
     <Compile Include="DB\ConverterXlsxContext.cs" />
     <Compile Include="DB\ConverterXlsxRepository.cs" />
     <Compile Include="DB\Models\Conversion.cs" />
+    <Compile Include="DB\Models\Status.cs" />
     <Compile Include="DB\Models\Error.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -155,9 +156,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReaderXml\ReaderXml.csproj">
-      <Project>{d55239bc-3abe-4a7c-9cf0-e177c2f99f6d}</Project>
-      <Name>ReaderXml</Name>
+    <ProjectReference Include="..\ConverterXlsxLibrary\ConverterXlsxLibrary.csproj">
+      <Project>{0EC40530-559B-4373-A1C8-A26004F80EF8}</Project>
+      <Name>ConverterXlsxLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

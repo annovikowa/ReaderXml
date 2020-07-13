@@ -1,0 +1,290 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0EC40530-559B-4373-A1C8-A26004F80EF8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ConverterXlsxLibrary</RootNamespace>
+    <AssemblyName>ConverterXlsxLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ClosedXML, Version=0.94.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.94.2\lib\net46\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.7.2.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.7.2\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelNumberFormat, Version=1.0.3.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelNumberFormat.1.0.3\lib\net20\ExcelNumberFormat.dll</HintPath>
+    </Reference>
+    <Reference Include="FastMember, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FastMember.1.3.0\lib\net45\FastMember.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.0.1\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Packaging, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Packaging.4.0.0\lib\net46\System.IO.Packaging.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CadastralObject.cs" />
+    <Compile Include="CadastralObjectInBlock.cs" />
+    <Compile Include="CadastralPlanTerritoryReader.cs" />
+    <Compile Include="ExelSheets\BoundSheet.cs" />
+    <Compile Include="ExelSheets\BuildingSheet.cs" />
+    <Compile Include="ExelSheets\CadastralSheet.cs" />
+    <Compile Include="ExelSheets\ConstructionSheet.cs" />
+    <Compile Include="ExelSheets\ExelFiller.cs" />
+    <Compile Include="ExelSheets\InformationSheet.cs" />
+    <Compile Include="ExelSheets\ISheet.cs" />
+    <Compile Include="ExelSheets\OMSPointSheet.cs" />
+    <Compile Include="ExelSheets\ParcelSheet.cs" />
+    <Compile Include="ExelSheets\SurveyingProjectSheet.cs" />
+    <Compile Include="ExelSheets\UncompletedSheet.cs" />
+    <Compile Include="ExelSheets\ZoneSheet.cs" />
+    <Compile Include="Fillers\ECPT\Address.cs" />
+    <Compile Include="Fillers\ECPT\BuildFiller.cs" />
+    <Compile Include="Fillers\ECPT\CadastralBlockFiller.cs" />
+    <Compile Include="Fillers\ECPT\ConstructionFiller.cs" />
+    <Compile Include="Fillers\ECPT\ECPTFiller.cs" />
+    <Compile Include="Fillers\ECPT\ECPTFillerFactory.cs" />
+    <Compile Include="Fillers\ECPT\LandFiller.cs" />
+    <Compile Include="Fillers\ECPT\ObjectUnderConstructionFiller.cs" />
+    <Compile Include="Fillers\ECPT\OMSPointFiller.cs" />
+    <Compile Include="Fillers\ECPT\SubjectBoundaryFiller.cs" />
+    <Compile Include="Fillers\ECPT\SurveyingProjectFiller.cs" />
+    <Compile Include="Fillers\ECPT\ZoneFiller.cs" />
+    <Compile Include="Fillers\FillerFactory.cs" />
+    <Compile Include="Fillers\IFiller.cs" />
+    <Compile Include="Fillers\KPT\Address.cs" />
+    <Compile Include="Fillers\KPT\BoundFiller.cs" />
+    <Compile Include="Fillers\KPT\BuildingFiller.cs" />
+    <Compile Include="Fillers\KPT\CadastralBlockFiller.cs" />
+    <Compile Include="Fillers\KPT\ConstructionFiller.cs" />
+    <Compile Include="Fillers\KPT\KPTFiller.cs" />
+    <Compile Include="Fillers\KPT\KPTFillerFactory.cs" />
+    <Compile Include="Fillers\KPT\OMSPointFiller.cs" />
+    <Compile Include="Fillers\KPT\ParcelFiller.cs" />
+    <Compile Include="Fillers\KPT\UncompletedFiller.cs" />
+    <Compile Include="Fillers\KPT\XsdClassifiers.cs" />
+    <Compile Include="Fillers\KPT\ZoneFiller.cs" />
+    <Compile Include="Models\Bound.cs" />
+    <Compile Include="Models\Building.cs" />
+    <Compile Include="Models\CadastralBlock.cs" />
+    <Compile Include="Models\CadastralPlanTerritory.cs" />
+    <Compile Include="Models\Construction.cs" />
+    <Compile Include="Models\OMSPoint.cs" />
+    <Compile Include="Models\Parcel.cs" />
+    <Compile Include="Models\SurveyingProject.cs" />
+    <Compile Include="Models\Uncompleted.cs" />
+    <Compile Include="Models\Zone.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\24_04_0501007_2017-06-01_kpt11.xml" />
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\24_05_1301016_2017-05-29_kpt11.xml" />
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\24_09_0102001_2017-05-31_kpt11.xml" />
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\24_09_1400008_2017-06-05_kpt11.xml" />
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\24_09_3105001_2017-05-31_kpt11.xml" />
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\24_11_0140302_2017-05-31_kpt11.xml" />
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\24_11_0330106_2017-05-31_kpt11.xml" />
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\24_21_0103003_2017-05-29_kpt11.xml" />
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\24_21_1003001_2017-05-29_kpt11.xml" />
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\24_23_4301008_2017-05-29_kpt11.xml" />
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\24_34_0070101_2017-05-25_kpt11.xml" />
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\24_34_0080401_2017-05-25_kpt11.xml" />
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\24_43_0120013_2017-06-02_kpt11.xml" />
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\24_46_0801001_2017-05-31_kpt11.xml" />
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\24_54_0105002_2017-06-01_kpt11.xml" />
+    <Content Include="КПТ\Примеры\extract_cadastral_plan_territory\84_01_0010104_2017-05-31_kpt11.xml" />
+    <Content Include="КПТ\Примеры\KPT %28v10%29\50_15_0000000_2016-06-30_kpt10.xml" />
+    <Content Include="КПТ\Примеры\KPT %28v10%29\50_48_0000000_2016-06-29_kpt10.xml" />
+    <Content Include="КПТ\Примеры\KPT %28v10%29\59_12_0230000_2016-07-07_kpt10.xml" />
+    <Content Include="КПТ\Примеры\KPT %28v10%29\76_13_041001_2016-07-01_kpt10.xml" />
+    <Content Include="КПТ\Примеры\KPT %28v10%29\kpt10_doc27877366.xml">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\commonSimpleTypes.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\extract_cadastral_plan_territory_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\tAddress_All_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\tBaseParametrs_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\tCad_number_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\tCommonTypesObjects_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\tContacts_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\tDduDealSubject_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\tDetailsStatement_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\tDict_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\tDocument_requisites_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\tFIO_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\tOtherSubject_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\tPublic_formations_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\tRecordNumber_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\tResolutionRequisites_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\tRightHolderOut_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\extract_cadastral_plan_territory_v01\Описание_структуры_extract_cadastral_plan_territory_v01.doc" />
+    <None Include="КПТ\Схемы\KPT_v10\KPT\KPT_v10.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommonSMEV\smev-supplementary-commons-1.0.1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dAllDocumentsOut_v03.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dAllowedUse_v02.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dApartment_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dAssBuilding_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dCategories_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dGeopointOpred_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dLocationLevel1_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dLocationLevel2_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dLocationLevel3_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dParcels_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dPermitUse_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dRealty_v03.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dRegionsRF_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dSovietVillage_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dStates_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dTypeParameter_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dUnit_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dUrbanDistrict_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dUtilizations_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\dWall_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\P_CommonSimpleType_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\P_CommonSimpleType_v02.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\P_CommonSimpleType_v04.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\_AddressOut_v04.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\_CadastralCost_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\_CertificationDoc_v01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\_DocumentOut_v04.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\_ParametersOKS_v02.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="КПТ\Схемы\KPT_v10\SchemaCommon\_Spatial_v05.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

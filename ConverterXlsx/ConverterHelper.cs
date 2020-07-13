@@ -1,21 +1,63 @@
-﻿using ReaderXml;
-using ReaderXml.ExelSheets;
-using System;
-using System.Collections.Generic;
+﻿using ConverterXlsx.DB;
+using ConverterXlsx.DB.Models;
+using ConverterXlsxLibrary.ExelSheets;
+using ConverterXlsxLibrary;
+using ConverterXlsxLibrary.Models;
 using System.Linq;
-using System.Web;
+using System.Collections.Generic;
 
 namespace ConverterXlsx
 {
     public class ConverterHelper
     {
-        public void Convertions(object path)
+        public ExelFiller Convertions(string pathInput, string id)
         {
-            var reader = new CadastralPlanTerritoryReader();
-            var KPT = reader.Read((string)path);
+            Conversion convertions;
+            using (var database = ConverterXlsxRepository.GetInstance())
+            {
+                convertions = database.GetConversion(id);
+                convertions.Status = Status.InProcess.ToString();
+                database.SaveChanges();
+            }
 
-            ExelFiller exelFiller = new ExelFiller(KPT);
-            //exelFiller.XlWorkbook.SaveAs("test.xlsx");
+            var reader = new CadastralPlanTerritoryReader();
+            var KPT = reader.Read(pathInput);
+            SaveErrors(KPT, convertions);
+
+            if (KPT != null)
+            {
+                string pathOutput = $" /{KPT.FileName}.xlsx"; //указать папку
+                var exelFiller = new ExelFiller(KPT);
+                exelFiller.XlWorkbook.SaveAs(pathOutput);
+
+                using (var database = ConverterXlsxRepository.GetInstance())
+                {
+                    convertions.PathOutput = pathOutput;
+                    database.SaveChanges();
+                }
+                return exelFiller;
+            }
+            return null;
+        }
+
+        private void SaveErrors(CadastralPlanTerritory KPT, Conversion conversion)
+        {
+            IEnumerable<string> allErrors = null;
+            foreach (var cadastralBlock in KPT.CadastralBlocks)
+            {
+                allErrors = KPT.Errors.Union(cadastralBlock.Errors);
+            }
+            if (allErrors.Count() > 0)
+            {
+                using (var database = ConverterXlsxRepository.GetInstance())
+                {
+                    foreach (var errorDescriptions in allErrors)
+                    {
+                        database.SaveError(errorDescriptions, conversion);
+                    }
+                }
+            }
+
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using ClosedXML.Excel;
 using ConverterXlsx.DB;
-using ReaderXml;
-using ReaderXml.ExelSheets;
+using ConverterXlsxLibrary.ExelSheets;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -9,18 +8,13 @@ using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Threading;
 using ConverterXlsx.DB.Models;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace ConverterXlsx.Controllers
 {
     public class XlsxController : ApiController
-    {        
-        enum Status
-        {
-            Created,
-            InProcess,
-            Ready
-        }
-
+    {     
         [HttpPost]
         public IHttpActionResult UploadFile()
         {
@@ -45,9 +39,10 @@ namespace ConverterXlsx.Controllers
 
             //запустить конвертацию: реализовать для этого очередь (в отдельном потоке), примеры можно легко найти
             ConverterHelper converterHelper = new ConverterHelper();
-            Thread thread = new Thread(new ParameterizedThreadStart(converterHelper.Convertions));
-            thread.Start(path);
-
+            Task<ExelFiller>.Run(() =>
+               {
+                  converterHelper.Convertions(path, id);
+               });
             return Ok(id);
         }
         [HttpGet]
@@ -56,6 +51,11 @@ namespace ConverterXlsx.Controllers
             using (var database = ConverterXlsxRepository.GetInstance())
             {
                 //добавить в репозиторий метод поиска по id, найден - вернуть Ok(status), не найден - NotFound(). Если есть ошибки - вернуть и их.
+                var errors = database.GetError(id);                
+                if (errors != null)
+                {
+
+                }
                 var result = database.GetConversion(id);
                 if (result != null)
                     return Ok(result.Status);
