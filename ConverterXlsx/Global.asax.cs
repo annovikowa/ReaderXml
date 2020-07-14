@@ -14,7 +14,12 @@ namespace ConverterXlsx
 
         protected void Application_Start(object sender, EventArgs e)
         {
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            RouteTable.Routes.MapHttpRoute(
+        name: "API Default",
+        routeTemplate: "api/{controller}/{id}",
+        defaults: new { id = RouteParameter.Optional }
+    );
+            //RouteConfig.RegisterRoutes(RouteTable.Routes);
         }
     }
 }

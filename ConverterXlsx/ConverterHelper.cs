@@ -5,18 +5,19 @@ using ConverterXlsxLibrary;
 using ConverterXlsxLibrary.Models;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ConverterXlsx
 {
     public class ConverterHelper
     {
-        public ExelFiller Convertions(string pathInput, string id)
+        public void Convertions(string pathInput, string id)
         {
             Conversion convertions;
             using (var database = ConverterXlsxRepository.GetInstance())
             {
                 convertions = database.GetConversion(id);
-                convertions.Status = Status.InProcess.ToString();
+                convertions.Status = Status.InProcess;
                 database.SaveChanges();
             }
 
@@ -35,9 +36,8 @@ namespace ConverterXlsx
                     convertions.PathOutput = pathOutput;
                     database.SaveChanges();
                 }
-                return exelFiller;
+                return;
             }
-            return null;
         }
 
         private void SaveErrors(CadastralPlanTerritory KPT, Conversion conversion)

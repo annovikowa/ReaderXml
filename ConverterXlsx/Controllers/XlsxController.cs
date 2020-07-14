@@ -15,7 +15,9 @@ namespace ConverterXlsx.Controllers
 {
     public class XlsxController : ApiController
     {     
+
         [HttpPost]
+        [Route("upload")]
         public IHttpActionResult UploadFile()
         {
             var files = System.Web.HttpContext.Current.Request.Files;
@@ -24,56 +26,62 @@ namespace ConverterXlsx.Controllers
                 return BadRequest("Передано некорректное количество файлов");
             }
             var file = files[0];
-            var path = System.Web.Hosting.HostingEnvironment.MapPath("some_path"); //тут надо указать папку для файлов
+            var path = System.Web.Hosting.HostingEnvironment.MapPath("~/some_path"); //тут надо указать папку для файлов
             //дополнительно добавить имя
             file.SaveAs(path);
-            string id = "";
+            var id = "";
             using (var database = ConverterXlsxRepository.GetInstance())
             {
                 //записать все в бд, получить id
-                id = System.Guid.NewGuid().ToString();
-                Conversion conversion = new Conversion(id, path, Status.Created.ToString());
-                database.Context.Conversions.Add(conversion);                
+                Conversion conversion = new Conversion(path, Status.Created);
+                database.Context.Conversions.Add(conversion);
                 database.SaveChanges();
+                id = conversion.ConversionId;
             }
 
             //запустить конвертацию: реализовать для этого очередь (в отдельном потоке), примеры можно легко найти
             ConverterHelper converterHelper = new ConverterHelper();
-            Task<ExelFiller>.Run(() =>
-               {
-                  converterHelper.Convertions(path, id);
-               });
+            StartConvertionAsync(path, id, converterHelper);
             return Ok(id);
         }
+
+        private static async Task StartConvertionAsync(string path, string id, ConverterHelper converterHelper)
+        {
+            await Task.Run(() =>
+            {
+                converterHelper.Convertions(path, id);
+            });
+        }
+
         [HttpGet]
+        [Route("status")]
         public IHttpActionResult GetStatus(string id)
         {
             using (var database = ConverterXlsxRepository.GetInstance())
             {
                 //добавить в репозиторий метод поиска по id, найден - вернуть Ok(status), не найден - NotFound(). Если есть ошибки - вернуть и их.
-                var errors = database.GetError(id);                
-                if (errors != null)
-                {
-
-                }
                 var result = database.GetConversion(id);
                 if (result != null)
-                    return Ok(result.Status);
+                    return Ok(new { result.Status, result.Errors });
                 else
                     return NotFound();
             }
             
         }
         [HttpGet]
+        [Route("result")]
         public HttpResponseMessage GetFile(string id)
         {
             //получить путь из БД
             string path = "";
             using (var database = ConverterXlsxRepository.GetInstance())
             {
-                path = database.GetConversion(id).PathOutput;
+                path = database.GetConversion(id)?.PathOutput;
             }
-
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            {
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+            }    
             HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
             var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
             result.Content = new StreamContent(stream);

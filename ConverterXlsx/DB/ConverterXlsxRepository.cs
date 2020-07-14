@@ -1,6 +1,7 @@
 ﻿using ConverterXlsx.DB.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -59,23 +60,12 @@ namespace ConverterXlsx.DB
             return Context.Conversions.ToArray();
         }
 
-        public Conversion GetConversion(string id)
-        {
-            var conversion = _converterXlsxContext.Conversions.
-                FirstOrDefault(i => i.Id == id);
-            return conversion;
-        }
+        public Conversion GetConversion(string id) => _converterXlsxContext.Conversions.Find(id);
 
         public void SaveError(string errorDescription, Conversion conversion)
         {
             Error error = new Error { Conversion = conversion, ErrorDescription = errorDescription };
             _converterXlsxContext.Errors.Add(error);
-        }
-
-        public IEnumerable<Error> GetError(string id)
-        {
-            var conversion = GetConversion(id);
-            return _converterXlsxContext.Errors.Where(c => c.Conversion == conversion).ToList();
         }
     }
 }

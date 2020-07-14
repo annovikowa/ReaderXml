@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -8,9 +10,10 @@ namespace ConverterXlsx.DB.Models
     public class Conversion
     {
         /// <summary>
-        /// можно наверно сделать Long
+        /// можно наверно сделать Long - тут int хватит, 2 миллиарда файлов - это очень много) и всегда потом можно поменять тип
         /// </summary>
-        public string Id { get; set; }
+        [Key]
+        public string ConversionId { get; set; } = Guid.NewGuid().ToString();
 
         public string PathInput { get; set; }
 
@@ -18,10 +21,12 @@ namespace ConverterXlsx.DB.Models
         /// <summary>
         /// Статусы бывают только определенные, можно сделать перечисление.
         /// </summary>
-        public string Status { get; set; }
-        public Conversion(string id, string pathInput, string status)
+        public Status Status { get; set; }
+
+        public virtual ICollection<Error> Errors { get; set; }
+
+        public Conversion(string pathInput, Status status)
         {
-            Id = id;
             PathInput = pathInput;
             Status = status;
         }
