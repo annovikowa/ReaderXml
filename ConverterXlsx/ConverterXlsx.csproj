@@ -145,7 +145,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\XlsxController.cs" />
-    <Compile Include="RouteConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

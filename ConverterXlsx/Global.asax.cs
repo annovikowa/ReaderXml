@@ -19,7 +19,6 @@ namespace ConverterXlsx
         routeTemplate: "api/{controller}/{id}",
         defaults: new { id = RouteParameter.Optional }
     );
-            //RouteConfig.RegisterRoutes(RouteTable.Routes);
         }
     }
 }
