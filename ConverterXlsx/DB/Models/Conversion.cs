@@ -23,7 +23,11 @@ namespace ConverterXlsx.DB.Models
         /// </summary>
         public Status Status { get; set; }
 
-        public virtual ICollection<Error> Errors { get; set; }
+        public ICollection<Error> Errors { get; set; }
+        /// <summary>
+        /// Конструктор без параметров - необходим для правильной работы
+        /// </summary>
+        public Conversion() { }
 
         public Conversion(string pathInput, Status status)
         {

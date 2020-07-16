@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -11,14 +12,13 @@ namespace ConverterXlsx
 {
     public class Global : System.Web.HttpApplication
     {
-
+        
         protected void Application_Start(object sender, EventArgs e)
         {
             RouteTable.Routes.MapHttpRoute(
-        name: "API Default",
-        routeTemplate: "api/{controller}/{id}",
-        defaults: new { id = RouteParameter.Optional }
-    );
+                name: "API Default",
+                routeTemplate: "api/{controller}/{action}"
+             );
         }
     }
 }

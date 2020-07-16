@@ -27,12 +27,13 @@ namespace ConverterXlsx
 
             if (KPT != null)
             {
-                string pathOutput = $" /{KPT.FileName}.xlsx"; //указать папку
+                string pathOutput = $"D:\\{KPT.FileName}.xlsx"; //указать папку
                 var exelFiller = new ExelFiller(KPT);
                 exelFiller.XlWorkbook.SaveAs(pathOutput);
 
                 using (var database = ConverterXlsxRepository.GetInstance())
                 {
+                    convertions = database.GetConversion(id); //надо искать по id,иначе нет связи этого экземпляра с бд
                     convertions.PathOutput = pathOutput;
                     database.SaveChanges();
                 }

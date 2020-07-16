@@ -17,7 +17,7 @@ namespace ConverterXlsx.Controllers
     {     
 
         [HttpPost]
-        [Route("upload")]
+        [ActionName("upload")]
         public IHttpActionResult UploadFile()
         {
             var files = System.Web.HttpContext.Current.Request.Files;
@@ -54,7 +54,7 @@ namespace ConverterXlsx.Controllers
         }
 
         [HttpGet]
-        [Route("status")]
+        [ActionName("status")]
         public IHttpActionResult GetStatus(string id)
         {
             using (var database = ConverterXlsxRepository.GetInstance())
@@ -69,7 +69,7 @@ namespace ConverterXlsx.Controllers
             
         }
         [HttpGet]
-        [Route("result")]
+        [ActionName("result")]
         public HttpResponseMessage GetFile(string id)
         {
             //получить путь из БД

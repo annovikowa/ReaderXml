@@ -18,6 +18,7 @@ namespace ConverterXlsx.DB
         {
             get
             {
+                
                 if (_converterXlsxContext == null || _converterXlsxContext.Database.Connection.State != System.Data.ConnectionState.Open)
                 {
                     _converterXlsxContext?.Dispose();
@@ -41,17 +42,17 @@ namespace ConverterXlsx.DB
 
         public int SaveChanges()
         {
-            return _converterXlsxContext?.SaveChanges() ?? 0;
+            return Context?.SaveChanges() ?? 0;
         }
 
         public Task<int> SaveChangesAsync()
         {
-            return _converterXlsxContext?.SaveChangesAsync() ?? Task.FromResult(0);
+            return Context?.SaveChangesAsync() ?? Task.FromResult(0);
         }
 
         public void Dispose()
         {
-            _converterXlsxContext?.Dispose();
+            Context?.Dispose();
         }
 
         public ICollection<Conversion> GetConversions()
@@ -60,12 +61,12 @@ namespace ConverterXlsx.DB
             return Context.Conversions.ToArray();
         }
 
-        public Conversion GetConversion(string id) => _converterXlsxContext.Conversions.Find(id);
+        public Conversion GetConversion(string id) => Context.Conversions.Find(id);
 
         public void SaveError(string errorDescription, Conversion conversion)
         {
             Error error = new Error { Conversion = conversion, ErrorDescription = errorDescription };
-            _converterXlsxContext.Errors.Add(error);
+            Context.Errors.Add(error);
         }
     }
 }
