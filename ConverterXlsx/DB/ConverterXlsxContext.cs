@@ -12,12 +12,12 @@ namespace ConverterXlsx.DB
     /// </summary>
     public class ConverterXlsxContext : DbContext
     {
-        public ConverterXlsxContext() : base("name=ServerDB")
+        public ConverterXlsxContext() : base("name=DBConnection")
         {
-
+            Database.CreateIfNotExists();
         }
 
-        public virtual DbSet<Conversion> Conversions { get; set; }
-        public virtual DbSet<Error> Errors { get; set; }
+        public DbSet<Conversion> Conversions { get; set; }
+        public DbSet<Error> Errors { get; set; }
     }
 }
