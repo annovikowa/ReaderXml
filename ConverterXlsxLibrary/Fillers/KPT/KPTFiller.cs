@@ -10,6 +10,7 @@ namespace ConverterXlsxLibrary.Fillers.KPT
     {
         public void Fill(CadastralPlanTerritory model, XmlReader reader)
         {
+            model.Version = "10";
             try
             {
                 while (reader.Read())

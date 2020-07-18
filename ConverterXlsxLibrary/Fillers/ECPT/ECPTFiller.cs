@@ -11,6 +11,7 @@ namespace ConverterXlsxLibrary.Fillers.ECPT
     {
         public void Fill(CadastralPlanTerritory model, XmlReader reader)
         {
+            model.Version = "11";
             try
             {
                 while (reader.Read())

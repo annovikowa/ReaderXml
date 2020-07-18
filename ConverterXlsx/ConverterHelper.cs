@@ -5,7 +5,8 @@ using ConverterXlsxLibrary;
 using ConverterXlsxLibrary.Models;
 using System.Linq;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System;
+using System.IO;
 
 namespace ConverterXlsx
 {
@@ -27,16 +28,20 @@ namespace ConverterXlsx
 
             if (KPT != null)
             {
-                string pathOutput = $" /{KPT.FileName}.xlsx"; //указать папку
+                var number = KPT.CadastralBlocks.First().CadastralNumber.Replace(":", "_");
+                DateTime dateConvertion = DateTime.Now;
+                string pathOutput = $"~/{id}/{number}_{dateConvertion.ToString("dd-MM-yyyy")}_kpt{KPT.Version}"; //указать папку
+                File.Move(pathInput, $"{pathOutput}.xml");
+
                 var exelFiller = new ExelFiller(KPT);
-                exelFiller.XlWorkbook.SaveAs(pathOutput);
+                exelFiller.XlWorkbook.SaveAs($"{pathOutput}.xlsx");
 
                 using (var database = ConverterXlsxRepository.GetInstance())
                 {
-                    convertions.PathOutput = pathOutput;
+                    convertions.PathInput = $"{pathOutput}.xlsx";
+                    convertions.PathOutput = $"{pathOutput}.xml";
                     database.SaveChanges();
                 }
-                return;
             }
         }
 
@@ -57,7 +62,6 @@ namespace ConverterXlsx
                     }
                 }
             }
-
         }
     }
 }

@@ -8,7 +8,11 @@ namespace ConverterXlsxLibrary.Models
     /// </summary>
     public class CadastralPlanTerritory
     {
-        #region Свойства
+        /// <summary>
+        /// Версия КПТ
+        /// </summary>
+        public string Version { get; set; }
+
         /// <summary>
         /// Название файла.
         /// </summary>
@@ -43,6 +47,5 @@ namespace ConverterXlsxLibrary.Models
         /// Список ошибок.
         /// </summary>
         public ICollection<string> Errors { get; set; } = new List<string>();
-        #endregion
     }
 }

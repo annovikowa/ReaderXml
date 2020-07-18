@@ -30,5 +30,7 @@ namespace ConverterXlsx.DB.Models
             PathInput = pathInput;
             Status = status;
         }
+
+        public Conversion() { }
     }
 }

@@ -26,23 +26,21 @@ namespace ConverterXlsx.Controllers
                 return BadRequest("Передано некорректное количество файлов");
             }
             var file = files[0];
-            var path = System.Web.Hosting.HostingEnvironment.MapPath("~/some_path"); //тут надо указать папку для файлов
+            Conversion conversion = new Conversion() { Status = Status.Created };
+            var path = System.Web.Hosting.HostingEnvironment.MapPath($"~/{conversion.ConversionId}/input.xml"); //тут надо указать папку для файлов
             //дополнительно добавить имя
             file.SaveAs(path);
-            var id = "";
             using (var database = ConverterXlsxRepository.GetInstance())
             {
-                //записать все в бд, получить id
-                Conversion conversion = new Conversion(path, Status.Created);
+                conversion.PathInput = path;
                 database.Context.Conversions.Add(conversion);
                 database.SaveChanges();
-                id = conversion.ConversionId;
             }
 
             //запустить конвертацию: реализовать для этого очередь (в отдельном потоке), примеры можно легко найти
             ConverterHelper converterHelper = new ConverterHelper();
-            StartConvertionAsync(path, id, converterHelper);
-            return Ok(id);
+            StartConvertionAsync(path, conversion.ConversionId, converterHelper);
+            return Ok(conversion.ConversionId);
         }
 
         private static async Task StartConvertionAsync(string path, string id, ConverterHelper converterHelper)
